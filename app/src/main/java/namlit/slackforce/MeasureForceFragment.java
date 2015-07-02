@@ -1,7 +1,9 @@
 package namlit.slackforce;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -53,6 +54,8 @@ public class MeasureForceFragment extends Fragment {
     private RadioButton mMeasureAutomaticallyButton;
     private RadioButton mMeasureManualButton;
 
+    private boolean mIsMeasureAutomatically;
+
     //private Parameter mParameterChanged = Parameter.LENGTH;
     //private Button mBackToMeasurementButton;
 
@@ -84,6 +87,8 @@ public class MeasureForceFragment extends Fragment {
         if (getArguments() != null) {
         }
         mSlacklineMeasurements = new SlacklineMeasurements();
+
+        restoreParameters();
     }
 
     @Override
@@ -104,19 +109,23 @@ public class MeasureForceFragment extends Fragment {
         updateMeasureFragment();
         updateTextFields();
 
+        mMeasureAutomaticallyButton.setChecked(mIsMeasureAutomatically);
+        mMeasureManualButton.setChecked(!mIsMeasureAutomatically);
+
         mMeasureAutomaticallyButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mIsMeasureAutomatically = isChecked;
                 updateMeasureFragment();
             }
         });
 
-        mMeasureManualButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                updateMeasureFragment();
-            }
-        });
+//        mMeasureManualButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                updateMeasureFragment();
+//            }
+//        });
 
         mWebbingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -200,6 +209,12 @@ public class MeasureForceFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        saveParameters();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -244,14 +259,16 @@ public class MeasureForceFragment extends Fragment {
     {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        if(mMeasureAutomaticallyButton.isChecked())
+        if(mIsMeasureAutomatically)
         {
             MeasureForceAutomaticallyFragment fragment = new MeasureForceAutomaticallyFragment();
+            //fragment.setRetainInstance(true);
             fragmentTransaction.replace(R.id.measureFragmentContainer, fragment);
         }
         else
         {
             MeasureForceManualFragment fragment = new MeasureForceManualFragment();
+            //fragment.setRetainInstance(true);
             fragmentTransaction.replace(R.id.measureFragmentContainer, fragment);
         }
         fragmentTransaction.commit();
@@ -287,7 +304,7 @@ public class MeasureForceFragment extends Fragment {
     {
         mWebbingButton.setText(mSlacklineMeasurements.getWebbingName());
         mStretch.setText(String.format(Locale.ENGLISH, "%.2f", mSlacklineMeasurements.getStretchCoefficient() / 1e-6));
-        mLineWeight.setText(String.format(Locale.ENGLISH, "%.1f", mSlacklineMeasurements.getWeightPerMeter() * 1e3 ));
+        mLineWeight.setText(String.format(Locale.ENGLISH, "%.1f", mSlacklineMeasurements.getWeightPerMeter() * 1e3));
         mLength.setText(String.format(Locale.ENGLISH, "%.1f", mSlacklineMeasurements.getLength()));
     }
 
@@ -302,6 +319,49 @@ public class MeasureForceFragment extends Fragment {
 
         double length = Double.valueOf(mLength.getText().toString());
         mSlacklineMeasurements.setLength(length);
+    }
+
+    private void restoreParameters()
+    {
+        Context context = getActivity();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.measure_force_preference_key), Context.MODE_PRIVATE);
+
+        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), "Custom");
+        double stretch = sharedPreferences.getFloat(getString(R.string.preference_stretch_coefficient), (float) 1e-5);
+        double weightPerMeter = sharedPreferences.getFloat(getString(R.string.preference_weight_per_meter), (float) 0.05);
+        double length = sharedPreferences.getFloat(getString(R.string.preference_line_length), 50);
+        boolean isAutomaticMeasurement = sharedPreferences.getBoolean(getString(R.string.preference_is_automatic_measurement), true);
+
+        Webbing webbing = Webbing.getWebbingByName(webbingName);
+        if (webbing != null)
+            mSlacklineMeasurements.setWebbing(webbing);
+        else {
+            mSlacklineMeasurements.setWebbing(new Webbing(webbingName, weightPerMeter, stretch));
+        }
+        mSlacklineMeasurements.setLength(length);
+        mIsMeasureAutomatically = isAutomaticMeasurement;
+    }
+
+    private void saveParameters()
+    {
+        Context context = getActivity();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.measure_force_preference_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        String webbingName = mSlacklineMeasurements.getWebbingName();
+        double stretch = mSlacklineMeasurements.getStretchCoefficient();
+        double weightPerMeter = mSlacklineMeasurements.getWeightPerMeter();
+        double length = mSlacklineMeasurements.getLength();
+        //boolean isAutomaticMeasurement =
+
+        editor.putString(getString(R.string.preference_webbing_name), webbingName);
+        editor.putFloat(getString(R.string.preference_stretch_coefficient), (float) stretch);
+        editor.putFloat(getString(R.string.preference_weight_per_meter), (float) weightPerMeter);
+        editor.putFloat(getString(R.string.preference_line_length), (float) length);
+        editor.putBoolean(getString(R.string.preference_is_automatic_measurement), mIsMeasureAutomatically);
+
+        editor.commit();
+
     }
 
 }

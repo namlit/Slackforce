@@ -1,7 +1,9 @@
 package namlit.slackforce;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -90,8 +92,7 @@ public class CalcForceFragment extends Fragment {
             //mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mSlackineCalculations = new SlacklineCalculations();
-
-        //mParameterToCalculate = Parameter.FORCE;
+        restoreParameters();
     }
 
     @Override
@@ -268,6 +269,12 @@ public class CalcForceFragment extends Fragment {
 //            throw new ClassCastException(activity.toString()
 //                    + " must implement OnFragmentInteractionListener");
 //        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        saveParameters();
     }
 
     @Override
@@ -449,6 +456,53 @@ public class CalcForceFragment extends Fragment {
     {
         Intent intent = new Intent(getActivity(), ChooseResultParameterActivity.class);
         startActivityForResult(intent, GET_PARAMETER_TO_CALCULATE_REQUEST);
+    }
+
+    private void restoreParameters()
+    {
+        Context context = getActivity();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.calculate_force_preference_key), Context.MODE_PRIVATE);
+
+        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), "Custom");
+        double stretch = sharedPreferences.getFloat(getString(R.string.preference_stretch_coefficient), (float) 1e-5);
+        double length = sharedPreferences.getFloat(getString(R.string.preference_line_length), 50);
+        double sag = sharedPreferences.getFloat(getString(R.string.preference_line_sag), 2);
+        double weight = sharedPreferences.getFloat(getString(R.string.preference_weight_of_slackliner), 80);
+
+
+        Webbing webbing = Webbing.getWebbingByName(webbingName);
+        if (webbing != null)
+            mSlackineCalculations.setWebbing(webbing);
+        else {
+            mSlackineCalculations.setWebbing(new Webbing(webbingName, stretch));
+        }
+        mSlackineCalculations.setLength(length);
+        mSlackineCalculations.setSag(sag);
+        mSlackineCalculations.setWeightOfSlackliner(weight);
+
+        mSlackineCalculations.calculateAnchorForce();
+    }
+
+    private void saveParameters()
+    {
+        Context context = getActivity();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.calculate_force_preference_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        String webbingName = mSlackineCalculations.getWebbingName();
+        double stretch = mSlackineCalculations.getStretchCoefficient();
+        double length = mSlackineCalculations.getLength();
+        double sag = mSlackineCalculations.getSag();
+        double weight = mSlackineCalculations.getWeightOfSlackliner();
+
+        editor.putString(getString(R.string.preference_webbing_name), webbingName);
+        editor.putFloat(getString(R.string.preference_stretch_coefficient), (float) stretch);
+        editor.putFloat(getString(R.string.preference_line_length), (float) length);
+        editor.putFloat(getString(R.string.preference_line_sag), (float) sag);
+        editor.putFloat(getString(R.string.preference_weight_of_slackliner), (float) weight);
+
+        editor.commit();
+
     }
 
 }

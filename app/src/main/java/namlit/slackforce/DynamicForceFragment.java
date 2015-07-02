@@ -1,7 +1,9 @@
 package namlit.slackforce;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -76,7 +78,7 @@ public class DynamicForceFragment extends Fragment {
             //mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mBounceSimulations = new SlacklineBounceSimulations();
-        mHeightOfFallValue = 1;
+        restoreParameters();
     }
 
     @Override
@@ -226,6 +228,12 @@ public class DynamicForceFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        saveParameters();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -325,6 +333,60 @@ public class DynamicForceFragment extends Fragment {
 
             t.printStackTrace();
         }
+    }
+
+    private void restoreParameters()
+    {
+        Context context = getActivity();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.dynamic_force_preference_key), Context.MODE_PRIVATE);
+
+        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), "Custom");
+        double stretch = sharedPreferences.getFloat(getString(R.string.preference_stretch_coefficient), (float) 1e-5);
+        double length = sharedPreferences.getFloat(getString(R.string.preference_line_length), 50);
+        double pretension = sharedPreferences.getFloat(getString(R.string.preference_pretension), 6000);
+        double initialSag = sharedPreferences.getFloat(getString(R.string.preference_sag_without_slackliner), 0);
+        double weight = sharedPreferences.getFloat(getString(R.string.preference_weight_of_slackliner), 80);
+        double heightOfFall = sharedPreferences.getFloat(getString(R.string.preference_height_of_fall), 1);
+
+
+        Webbing webbing = Webbing.getWebbingByName(webbingName);
+        if (webbing != null)
+            mBounceSimulations.setWebbing(webbing);
+        else {
+            mBounceSimulations.setWebbing(new Webbing(webbingName, stretch));
+        }
+        mBounceSimulations.setLength(length);
+        mBounceSimulations.setPretension(pretension);
+        mBounceSimulations.setInitialSag(initialSag);
+        mBounceSimulations.setWeight(weight);
+        mHeightOfFallValue = heightOfFall;
+
+    }
+
+    private void saveParameters()
+    {
+        Context context = getActivity();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.dynamic_force_preference_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        String webbingName = mBounceSimulations.getWebbingName();
+        double stretch = mBounceSimulations.getStretchCoefficient();
+        double length = mBounceSimulations.getLength();
+        double pretension = mBounceSimulations.getPretension();
+        double initialSag = mBounceSimulations.getInitialSag();
+        double weight = mBounceSimulations.getWeight();
+        double heightOfFall = mHeightOfFallValue;
+
+        editor.putString(getString(R.string.preference_webbing_name), webbingName);
+        editor.putFloat(getString(R.string.preference_stretch_coefficient), (float) stretch);
+        editor.putFloat(getString(R.string.preference_line_length), (float) length);
+        editor.putFloat(getString(R.string.preference_pretension), (float) pretension);
+        editor.putFloat(getString(R.string.preference_sag_without_slackliner), (float) initialSag);
+        editor.putFloat(getString(R.string.preference_weight_of_slackliner), (float) weight);
+        editor.putFloat(getString(R.string.preference_height_of_fall), (float) heightOfFall);
+
+        editor.commit();
+
     }
 
 }

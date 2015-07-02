@@ -52,6 +52,18 @@ public class Webbing
 		
 		slackpro.addWebbing("NEON-Light", 0.057, 3.75*1e-6, 33, 25);
 		slackpro.addWebbing("Green-Lightning", 0.072, 3.5*1e-6, 42, 25);
+
+		updateListOfWebbings();
+	}
+
+	public static Webbing getWebbingByName(String name)
+	{
+		for( Webbing webbing: getAllWebbings())
+		{
+			if (name.equals(webbing.getName()))
+				return webbing;
+		}
+		return null;
 	}
 
 	public Webbing(String name, double stretchCoefficient)

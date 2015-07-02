@@ -34,7 +34,7 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
 
     private Button mStartStopButton;
     private TextView mStatusText;
-    private boolean isMeasuring = false;
+    private boolean mIsMeasuring = false;
 
     private final int mFrameRate =44100;
     final SlacklineSoundAudioProcessor mAudioProcessor = new SlacklineSoundAudioProcessor(mFrameRate);
@@ -49,9 +49,10 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
      * @return A new instance of fragment MeasureForceAutomaticallyFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MeasureForceAutomaticallyFragment newInstance() {
+    public static MeasureForceAutomaticallyFragment newInstance(boolean isMeasuring) {
         MeasureForceAutomaticallyFragment fragment = new MeasureForceAutomaticallyFragment();
         Bundle args = new Bundle();
+        args.putBoolean("ISMEASURENG", isMeasuring);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,6 +66,8 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
         }
+
+        //mIsMeasuring = false;
     }
 
     @Override
@@ -78,11 +81,14 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
 
         mStatusText.setText(R.string.measure_force_automatically__status_text_start_measurement);
 
+//        if (mIsMeasuring)
+//            mStartStopButton.setEnabled(false);
+
         mStartStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isMeasuring)
-                    isMeasuring = false;
+                if (mIsMeasuring)
+                    mIsMeasuring = false;
                 else
                     startMeasurement();
             }
@@ -114,6 +120,13 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
 //        }
 //    }
 
+//    @Override
+//    public void onViewStateRestored(Bundle bundle) {
+//        super.onViewStateRestored(bundle);
+//
+//    }
+
+
 
 
     @Override
@@ -128,8 +141,17 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
     public void onStop()
     {
         super.onStop();
+        //stopMeasuring();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
         stopMeasuring();
     }
+
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -157,7 +179,7 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
         mStartStopButton.setEnabled(false);
         //mStartStopButton.setText("Abort measurement");
         mStatusText.setText(R.string.measure_force_automatically__status_text_measuring);
-        isMeasuring = true;
+        mIsMeasuring = true;
 
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
         final int bufferSize = AudioRecord.getMinBufferSize(mFrameRate,
@@ -191,7 +213,7 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
 
                         //mAudioProcessor.processFromFile("/storage/sdcard0/Music/SlacklineSnap/Aufnahme_jumpline.wav");
                         do  {
-//                        if (!isMeasuring)
+//                        if (!mIsMeasuring)
 //                        {
 //                            stopMeasuring();
 //                            return;
@@ -229,7 +251,7 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
 
     private void stopMeasuring()
     {
-        isMeasuring = false;
+        mIsMeasuring = false;
         if (mAudioRecord != null)
         {
             //mAudioRecord.stop();
