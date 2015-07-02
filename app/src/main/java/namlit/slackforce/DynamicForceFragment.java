@@ -1,0 +1,330 @@
+package namlit.slackforce;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.util.Locale;
+
+import slacklib.*;
+
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link DynamicForceFragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link DynamicForceFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class DynamicForceFragment extends Fragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
+    static final int GET_WEBBING_REQUEST = 1;
+
+    private OnFragmentInteractionListener mListener;
+    private SlacklineBounceSimulations mBounceSimulations;
+    private Button mWebbing;
+    private EditText mStretch;
+    private EditText mLength;
+    private EditText mPretension;
+    private EditText mInitialSag;
+    private EditText mWeight;
+    private EditText mHeightOfFallEditText;
+    private TextView mGFactor;
+    private TextView mMaxSag;
+    private TextView mSlackerForce;
+    private TextView mMaxLineForce;
+    private double mHeightOfFallValue;
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment DynamicForceFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static DynamicForceFragment newInstance() {
+        DynamicForceFragment fragment = new DynamicForceFragment();
+        Bundle args = new Bundle();
+        //args.putString(ARG_PARAM1, param1);
+        //args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public DynamicForceFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            //mParam1 = getArguments().getString(ARG_PARAM1);
+            //mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+        mBounceSimulations = new SlacklineBounceSimulations();
+        mHeightOfFallValue = 1;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_dynamic_force, container, false);
+
+        mWebbing = (Button) view.findViewById(R.id.webbing);
+        mStretch = (EditText) view.findViewById(R.id.stretch);
+        mLength = (EditText) view.findViewById(R.id.length);
+        mPretension = (EditText) view.findViewById(R.id.pretension);
+        mInitialSag = (EditText) view.findViewById(R.id.initialSag);
+        mWeight = (EditText) view.findViewById(R.id.weight);
+        mHeightOfFallEditText = (EditText) view.findViewById(R.id.heightOfFall);
+        mGFactor = (TextView) view.findViewById(R.id.gFactor);
+        mSlackerForce = (TextView) view.findViewById(R.id.maxVerticalForce);
+        mMaxLineForce = (TextView) view.findViewById(R.id.maxLineForce);
+        mMaxSag = (TextView) view.findViewById(R.id.maxSag);
+
+        mWebbing.setText(mBounceSimulations.getSlackCalc().getWebbing().toString());
+        mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getWebbing().getStretchCoefficient() / 1e-6));
+        mLength.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getLength()));
+        mPretension.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getPretension()/1e3 ));
+        mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getWeightOfSlackliner() ));
+        mHeightOfFallEditText.setText(String.format(Locale.ENGLISH, "%.1f", mHeightOfFallValue));
+
+        updateTextFields();
+        calculateDynamicForces();
+
+        mWebbing.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), SelectWebbingManufacturerActivity.class);
+                startActivityForResult(intent, GET_WEBBING_REQUEST);
+            }
+        });
+        mStretch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    update();
+                }
+            }
+        });
+        mStretch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                update();
+                return true;
+            }
+        });
+        mLength.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    update();
+                }
+            }
+        });
+        mLength.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                update();
+                return true;
+            }
+        });
+        mPretension.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    update();
+                }
+            }
+        });
+        mPretension.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                update();
+                return true;
+            }
+        });
+        mInitialSag.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    update();
+                }
+            }
+        });
+        mInitialSag.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                update();
+                return true;
+            }
+        });
+        mWeight.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    update();
+                }
+            }
+        });
+        mWeight.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                update();
+                return true;
+            }
+        });
+        mHeightOfFallEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    update();
+                }
+            }
+        });
+        mHeightOfFallEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                update();
+                return true;
+            }
+        });
+
+        return view;
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+//        try {
+//            mListener = (OnFragmentInteractionListener) activity;
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException(activity.toString()
+//                    + " must implement OnFragmentInteractionListener");
+//        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        public void onFragmentInteraction(Uri uri);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(requestCode == GET_WEBBING_REQUEST)
+        {
+            if(resultCode == Activity.RESULT_OK)
+            {
+                int manufacturerID = data.getIntExtra("MANUFACTURER_ID", 0);
+                int webbingID = data.getIntExtra("WEBBING_ID", 0);
+
+                mBounceSimulations.getSlackCalc().setWebbing(Manufacturer.getManufacturerByID(manufacturerID).getWebbingByID(webbingID));
+
+                mWebbing.setText(mBounceSimulations.getSlackCalc().getWebbing().toString());
+                mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getWebbing().getStretchCoefficient() / 1e-6));
+
+                calculateDynamicForces();
+            }
+        }
+    }
+
+
+    private void update()
+    {
+        readFromTextFields();
+        updateTextFields();
+        calculateDynamicForces();
+    }
+
+    private void calculateDynamicForces()
+    {
+        double maxForces[] = mBounceSimulations.calculateMaximumForces(mHeightOfFallValue);
+        mGFactor.setText(String.format(Locale.ENGLISH, "%.2f", maxForces[0]));
+        mSlackerForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[1]/1e3));
+        mMaxLineForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[2] / 1e3));
+        mMaxSag.setText(String.format(Locale.ENGLISH, "%.2f m", maxForces[3]));
+    }
+
+    private  void updateTextFields()
+    {
+        mWebbing.setText(mBounceSimulations.getSlackCalc().getWebbing().toString());
+        mStretch.setText(String.format(Locale.ENGLISH, "%.2f", mBounceSimulations.getSlackCalc().getWebbing().getStretchCoefficient() / 1e-6));
+        mLength.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getLength()));
+        mPretension.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getPretension() / 1e3 ));
+        mInitialSag.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getSagWithoutSlacker()));
+        mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getWeightOfSlackliner()));
+        mHeightOfFallEditText.setText(String.format(Locale.ENGLISH, "%.1f", mHeightOfFallValue));
+    }
+
+    private void readFromTextFields()
+    {
+        try
+        {
+            double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
+            if (mBounceSimulations.getSlackCalc().getWebbing().getStretchCoefficient() != stretch)
+            {
+                mBounceSimulations.getSlackCalc().setWebbing(new Webbing("Custom", stretch));
+                mWebbing.setText(mBounceSimulations.getSlackCalc().getWebbing().toString());
+            }
+
+            double length = Double.valueOf(mLength.getText().toString());
+            double pretension = Double.valueOf(mPretension.getText().toString()) * 1e3;
+            double initialSag = Double.valueOf(mInitialSag.getText().toString());
+            double weight = Double.valueOf(mWeight.getText().toString());
+            mHeightOfFallValue =  Double.valueOf(mHeightOfFallEditText.getText().toString());
+
+            mBounceSimulations.getSlackCalc().setLength(length);
+
+            if (pretension != mBounceSimulations.getSlackCalc().getPretension())
+                mBounceSimulations.getSlackCalc().setPretension(pretension);
+            else
+                mBounceSimulations.getSlackCalc().setSagWithoutSlacker(initialSag);
+
+            mBounceSimulations.getSlackCalc().setWeightOfSlackliner(weight);
+
+        } catch (Throwable t) {
+
+            t.printStackTrace();
+        }
+    }
+
+}

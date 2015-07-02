@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Slackforce</string>
+
+    <string name="title_section1">measure\nForce</string>
+    <string name="title_section2">static\nCalculations</string>
+    <string name="title_section3">dynamic\nCalculations</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="action_settings">Settings</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_select_webbing_manufactorer_action">
+        SelectWebbingManufactorerAction
+    </string>
+    <string name="title_activity_select_webbing">SelectWebbingActivity</string>
+    <string name="title_activity_choose_result_parameter">ChooseResultParameterActivity</string>
+
+
+    <string name="measure_force_automatically__status_text_start_measurement">Press the start button to start the automatic measurement. Then hold the microphone of your phone next to the line and slap the line with your finger. Wait until the measurement is finished.</string>
+    <string name="measure_force_automatically__status_text_measuring">measuring...\nThe measurement will stop automatically when the time of oscillation got recognized. If you get no result you can slap the line again. </string>
+
+
+</resources>
