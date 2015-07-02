@@ -189,6 +189,7 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
 
                     try {
 
+                        //mAudioProcessor.processFromFile("/storage/sdcard0/Music/SlacklineSnap/Aufnahme_jumpline.wav");
                         do  {
 //                        if (!isMeasuring)
 //                        {
