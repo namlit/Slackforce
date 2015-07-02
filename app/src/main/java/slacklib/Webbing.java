@@ -2,19 +2,17 @@ package slacklib;
 
 import java.util.*;
 
-import slacklib.Manufacturer;
-
 public class Webbing 
 {
 	private static List<Webbing> webbings = new LinkedList<Webbing>();
 	
-	private String name;
-	private Manufacturer manufacturer;
-	private double weightPerMeter; // [kg/m]
-	private double stretchCoefficient; // [percent / 100N]
-	private StretchPoint[] stretchPoints = null;
-	private double breakingStrength; // [kN]
-	private double width; // [mm]
+	private String mName;
+	private Manufacturer mManufacturer;
+	private double mWeightPerMeter; // [kg/m]
+	private double mStretchCoefficient; // [percent / 100N]
+	private StretchPoint[] mStretchPoints = null;
+	private double mBreakingStrength; // [kN]
+	private double mWidth; // [mm]
 	
 //	public static void addWebbing(Webbing webbing)
 //	{
@@ -68,12 +66,12 @@ public class Webbing
 
 	public Webbing(String name, Manufacturer manufacturer, double weightPerMeter, double stretchCoefficient, double breakingStrength, double width)
 	{
-		this.name = name;
-		this.manufacturer = manufacturer;
-		this.weightPerMeter = weightPerMeter;
-		this.stretchCoefficient = stretchCoefficient;
-		this.breakingStrength = breakingStrength;
-		this.width = width;
+		this.mName = name;
+		this.mManufacturer = manufacturer;
+		this.mWeightPerMeter = weightPerMeter;
+		this.mStretchCoefficient = stretchCoefficient;
+		this.mBreakingStrength = breakingStrength;
+		this.mWidth = width;
 	}
 	
 	public Webbing()
@@ -84,46 +82,46 @@ public class Webbing
 
 	public String getName()
 	{
-		return name;
+		return mName;
 	}
 
 
 
 	public Manufacturer getManufacturer()
 	{
-		return manufacturer;
+		return mManufacturer;
 	}
 
 
 
 	public double getWeightPerMeter()
 	{
-		return weightPerMeter;
+		return mWeightPerMeter;
 	}
 
 
 
 	public double getStretchCoefficient()
 	{
-		return stretchCoefficient;
+		return mStretchCoefficient;
 	}
 
-	public double getStretchCoefficient(double workingForce)
-	{
-		if (stretchPoints == null || stretchPoints.length == 0)
-			return getStretchCoefficient();
+	public double getStretch(double workingForce)
+	{ //todo: sollte noch überarbeitet werden
+		if (mStretchPoints == null || mStretchPoints.length == 0)
+			return workingForce * getStretchCoefficient();
 		int i = 0;
-		while(workingForce > stretchPoints[i].getForce())
+		while(workingForce > mStretchPoints[i].getForce())
 		{
-			if (i == stretchPoints.length - 1)
-				return stretchPoints[i].getStretch();
+			if (i == mStretchPoints.length - 1)
+				return mStretchPoints[i].getStretch();
 			i++;
 		}
 
-		double x1 = stretchPoints[i-1].getForce();
-		double x2 = stretchPoints[i].getForce();
-		double y1 = stretchPoints[i-1].getStretch();
-		double y2 = stretchPoints[i].getStretch();
+		double x1 = mStretchPoints[i-1].getForce();
+		double x2 = mStretchPoints[i].getForce();
+		double y1 = mStretchPoints[i-1].getStretch();
+		double y2 = mStretchPoints[i].getStretch();
 
 		return (y2-y1) / (x2-x1) * (workingForce - x1) + y1;
 	}
@@ -132,23 +130,23 @@ public class Webbing
 	
 	public double getBreakingStrength()
 	{
-		return breakingStrength;
+		return mBreakingStrength;
 	}
 
 	public double getWidth()
 	{
-		return width;
+		return mWidth;
 	}
 
 
 	public boolean equals(Webbing webbing)
 	{
-		return name.equals(webbing.getName());
+		return mName.equals(webbing.getName());
 	}
 	
 	@Override public String toString()
 	{
-		return name;
+		return mName;
 	}
 
 	public class StretchPoint{
@@ -171,32 +169,32 @@ public class Webbing
 
 	private void setName(String name)
 	{
-		this.name = name;
+		this.mName = name;
 	}
 
 	private void setManufacturer(Manufacturer manufacturer)
 	{
-		this.manufacturer = manufacturer;
+		this.mManufacturer = manufacturer;
 	}
 
 	private void setWeightPerMeter(double weightPerMeter)
 	{
-		this.weightPerMeter = weightPerMeter;
+		this.mWeightPerMeter = weightPerMeter;
 	}
 
 	private void setStretchCoefficient(double stretchCoefficient)
 	{
-		this.stretchCoefficient = stretchCoefficient;
+		this.mStretchCoefficient = stretchCoefficient;
 	}
 
 	private void setBreakingStrength(double breakingStrength)
 	{
-		this.breakingStrength = breakingStrength;
+		this.mBreakingStrength = breakingStrength;
 	}
 
 	private void setWidth(double width)
 	{
-		this.width = width;
+		this.mWidth = width;
 	}
 
 

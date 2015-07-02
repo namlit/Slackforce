@@ -21,46 +21,46 @@ public class SlacklineSoundAudioProcessor {
         STOPPED, ACTIVE, WAIT_FOT_DEBOUNCE
     }
 
-    private double framerate;
-    private double currentTime;
-    private double debounceFinishedTime;
-    private double compressionFinishedTime = 0;
-    private double peakTimes[];
-    private double timeOfOscillation;
-    private int numberOfDetectedPeaks;
-    private int numberOfBounces;
-    private int requiredNumberOfPeaks = 4;
-    private ProcessStatus processStatus = ProcessStatus.STOPPED;
+    private double mFramerate;
+    private double mCurrentTime;
+    private double mDebounceFinishedTime;
+    private double mCompressionFinishedTime = 0;
+    private double mPeakTimes[];
+    private double mTimeOfOscillation;
+    private int mNumberOfDetectedPeaks;
+    private int mNumberOfBounces;
+    private int mRequiredNumberOfPeaks = 4;
+    private ProcessStatus mProcessStatus = ProcessStatus.STOPPED;
 
     public SlacklineSoundAudioProcessor(double framerate)
     {
-        this.framerate = framerate;
-        this.currentTime = 0;
-        this.debounceFinishedTime = 0;
-        this.peakTimes = new double [MAX_NUMBER_OF_PEAKS];
-        this.timeOfOscillation = 0;
-        this.numberOfDetectedPeaks = 0;
-        processStatus = ProcessStatus.STOPPED;
+        this.mFramerate = framerate;
+        this.mCurrentTime = 0;
+        this.mDebounceFinishedTime = 0;
+        this.mPeakTimes = new double [MAX_NUMBER_OF_PEAKS];
+        this.mTimeOfOscillation = 0;
+        this.mNumberOfDetectedPeaks = 0;
+        mProcessStatus = ProcessStatus.STOPPED;
     }
 
     public boolean process(short[] audioData, int offsetInShorts, int sizeInShorts)
     {
         short currentSamplingPoint;
 
-        if (currentTime == 0)
-            processStatus = ProcessStatus.ACTIVE;
+        if (mCurrentTime == 0)
+            mProcessStatus = ProcessStatus.ACTIVE;
 
         for( int i = offsetInShorts; i < sizeInShorts; i++)
         {
             currentSamplingPoint = audioData[i];
             processSamplingPoint(currentSamplingPoint);
-            currentTime += 1/framerate;
+            mCurrentTime += 1/ mFramerate;
 
-            if (processStatus == ProcessStatus.STOPPED)
+            if (mProcessStatus == ProcessStatus.STOPPED)
                 break;
         }
 
-        if (numberOfDetectedPeaks >= requiredNumberOfPeaks)
+        if (mNumberOfDetectedPeaks >= mRequiredNumberOfPeaks)
         {
             return calculateTimeOfOscillation();
         }
@@ -70,14 +70,14 @@ public class SlacklineSoundAudioProcessor {
 
     public double getTimeOfOscillation()
     {
-        return timeOfOscillation;
+        return mTimeOfOscillation;
     }
 
     public void reset()
     {
-        currentTime = 0;
-        numberOfDetectedPeaks = 0;
-        processStatus = ProcessStatus.STOPPED;
+        mCurrentTime = 0;
+        mNumberOfDetectedPeaks = 0;
+        mProcessStatus = ProcessStatus.STOPPED;
     }
 
     public boolean processFromFile(String filename)
@@ -106,69 +106,69 @@ public class SlacklineSoundAudioProcessor {
 
     private void processSamplingPoint(short samplingPoint)
     {
-        switch (processStatus)
+        switch (mProcessStatus)
         {
             case STOPPED:
                 return;
             case WAIT_FOT_DEBOUNCE:
-                if (samplingPoint > THRESHOLD && currentTime > compressionFinishedTime)
+                if (samplingPoint > THRESHOLD && mCurrentTime > mCompressionFinishedTime)
                 {
-                    numberOfBounces++;
-                    compressionFinishedTime = currentTime + COMPRESSION_TIME;
+                    mNumberOfBounces++;
+                    mCompressionFinishedTime = mCurrentTime + COMPRESSION_TIME;
                 }
-                if(currentTime >= debounceFinishedTime) {
-                    if (numberOfBounces < MINIMUM_NUMBER_OF_BOUNCES)
-                        numberOfDetectedPeaks--; // ignore Last Peak
-                    processStatus = ProcessStatus.ACTIVE;
+                if(mCurrentTime >= mDebounceFinishedTime) {
+                    if (mNumberOfBounces < MINIMUM_NUMBER_OF_BOUNCES)
+                        mNumberOfDetectedPeaks--; // ignore Last Peak
+                    mProcessStatus = ProcessStatus.ACTIVE;
                 }
                 return;
 
         }
         if (samplingPoint > THRESHOLD)
         {
-            if (timeVariationToLastMeasurement(currentTime) > MAX_VARIATION_TIME_BEETWEEN_PEAKS)
-                numberOfDetectedPeaks = 0;
+            if (timeVariationToLastMeasurement(mCurrentTime) > MAX_VARIATION_TIME_BEETWEEN_PEAKS)
+                mNumberOfDetectedPeaks = 0;
 
             adjustRequiredNumberOfPeaks();
 
-            peakTimes[numberOfDetectedPeaks] = currentTime;
-            numberOfDetectedPeaks++;
-            debounceFinishedTime = currentTime + BOUNCING_TIME;
-            compressionFinishedTime = currentTime + COMPRESSION_TIME;
-            processStatus = ProcessStatus.WAIT_FOT_DEBOUNCE;
-            numberOfBounces = 1;
+            mPeakTimes[mNumberOfDetectedPeaks] = mCurrentTime;
+            mNumberOfDetectedPeaks++;
+            mDebounceFinishedTime = mCurrentTime + BOUNCING_TIME;
+            mCompressionFinishedTime = mCurrentTime + COMPRESSION_TIME;
+            mProcessStatus = ProcessStatus.WAIT_FOT_DEBOUNCE;
+            mNumberOfBounces = 1;
 
-            if (numberOfDetectedPeaks >= requiredNumberOfPeaks)
-                processStatus = ProcessStatus.STOPPED;
+            if (mNumberOfDetectedPeaks >= mRequiredNumberOfPeaks)
+                mProcessStatus = ProcessStatus.STOPPED;
         }
     }
 
     private double timeVariationToLastMeasurement(double peaktime)
     {
-        if (numberOfDetectedPeaks <= 1)
+        if (mNumberOfDetectedPeaks <= 1)
             return 0;
-        double timeDifferenceBetweenLastPeaks = peakTimes[numberOfDetectedPeaks-1] - peakTimes[numberOfDetectedPeaks-2];
-        double timeDifferenceToLastPeak = peaktime - peakTimes[numberOfDetectedPeaks-1];
+        double timeDifferenceBetweenLastPeaks = mPeakTimes[mNumberOfDetectedPeaks -1] - mPeakTimes[mNumberOfDetectedPeaks -2];
+        double timeDifferenceToLastPeak = peaktime - mPeakTimes[mNumberOfDetectedPeaks -1];
         return Math.abs(timeDifferenceToLastPeak - timeDifferenceBetweenLastPeaks);
     }
 
     private double distanceToLastPeak(double peaktime)
     {
-        if (numberOfDetectedPeaks <= 0)
+        if (mNumberOfDetectedPeaks <= 0)
             return 0;
-        return peaktime - peakTimes[numberOfDetectedPeaks-1];
+        return peaktime - mPeakTimes[mNumberOfDetectedPeaks -1];
     }
 
     private boolean calculateTimeOfOscillation()
     {
-        if(numberOfDetectedPeaks < requiredNumberOfPeaks)
+        if(mNumberOfDetectedPeaks < mRequiredNumberOfPeaks)
             return false;
 
-        double timesBeetweenPeaks[] = new double[requiredNumberOfPeaks -1];
+        double timesBeetweenPeaks[] = new double[mRequiredNumberOfPeaks -1];
 
-        for (int i = 1; i < requiredNumberOfPeaks; i++)
+        for (int i = 1; i < mRequiredNumberOfPeaks; i++)
         {
-            timesBeetweenPeaks[i-1] = peakTimes[i] - peakTimes[i-1];
+            timesBeetweenPeaks[i-1] = mPeakTimes[i] - mPeakTimes[i-1];
         }
         for ( int i = 1; i < timesBeetweenPeaks.length; i++)
         {
@@ -187,21 +187,21 @@ public class SlacklineSoundAudioProcessor {
             timeOfOscillationSum += time;
         }
 
-        timeOfOscillation = timeOfOscillationSum / timesBeetweenPeaks.length;
+        mTimeOfOscillation = timeOfOscillationSum / timesBeetweenPeaks.length;
         reset();
         return true;
     }
 
     private void adjustRequiredNumberOfPeaks()
     {
-        double distanceToLastPeak = distanceToLastPeak(currentTime);
+        double distanceToLastPeak = distanceToLastPeak(mCurrentTime);
 
-        requiredNumberOfPeaks = MAX_NUMBER_OF_PEAKS;
+        mRequiredNumberOfPeaks = MAX_NUMBER_OF_PEAKS;
 
         if (distanceToLastPeak > 0.2)
-            requiredNumberOfPeaks = 4;
+            mRequiredNumberOfPeaks = 4;
 
         if (distanceToLastPeak > 0.28)
-            requiredNumberOfPeaks = 3;
+            mRequiredNumberOfPeaks = 3;
     }
 }

@@ -4,16 +4,16 @@ public class SlacklineCalculations
 {
 	public final double GRAVITY_ACCELERATION = 9.81;
 	
-	private double sag; // [m]
-	private double sagWithoutSlacker; // [m] for rodeo lines, normally 0
-	private double length; // [m]
-	private double weightOfSlackliner; // [kg]
-	private double verticalForce; // N
-	private double anchorForce; // [N]
-	private double pretension; // [kN]
-	private Webbing webbing;
+	private double mSag; // [m]
+	private double mSagWithoutSlacker; // [m] for rodeo lines, normally 0
+	private double mLength; // [m]
+	private double mWeightOfSlackliner; // [kg]
+	private double mVerticalForce; // N
+	private double mAnchorForce; // [N]
+	private double mPretension; // [kN]
+	private Webbing mWebbing;
 
-	private boolean isPretensionConstant = true; // is also used if the sag without Slackliner on Rodeolines changes
+	private boolean isPretensionConstant = true; // is also used if the mSag without Slackliner on Rodeolines changes
 	
 	public SlacklineCalculations()
 	{
@@ -22,120 +22,127 @@ public class SlacklineCalculations
 
 	public SlacklineCalculations(Webbing webbing, double length, double sag, double weight)
 	{
-		this.sag = sag;
-		this.length = length;
-		this.weightOfSlackliner = weight;
-		this.verticalForce = calculateVerticalForceFromWeight();
-		this.webbing = webbing;
-		this.anchorForce = calculateAnchorForce();
+		this.mSag = sag;
+		this.mLength = length;
+		this.mWeightOfSlackliner = weight;
+		this.mVerticalForce = calculateVerticalForceFromWeight();
+		this.mWebbing = webbing;
+		this.mAnchorForce = calculateAnchorForce();
 		calculatePretension();
 	}
 
 	@Override public String toString()
 	{
-		return "Length:\t\t" + length + " m\n" +
-				"Sag:\t\t" + sag + " m\n" +
-				"Weigth:\t\t" + weightOfSlackliner + " kg\n" +
-				"Force:\t\t" + anchorForce/1000 + " kN\n" +
-				"Pretension:\t" + pretension/1000 + " kN\n" +
-				"Initial Sag:\t" + sagWithoutSlacker + " m" +
-				"Webbing:\t" + webbing + "\n"
+		return "Length:\t\t" + mLength + " m\n" +
+				"Sag:\t\t" + mSag + " m\n" +
+				"Weigth:\t\t" + mWeightOfSlackliner + " kg\n" +
+				"Force:\t\t" + mAnchorForce /1000 + " kN\n" +
+				"Pretension:\t" + mPretension /1000 + " kN\n" +
+				"Initial Sag:\t" + mSagWithoutSlacker + " m" +
+				"Webbing:\t" + mWebbing + "\n"
 				;
 	}
 
 	/**
-	 * This method does not check that the parameters sag, length, weight, force
-	 * and pretension are consistent. Normally you should use method calculateSag()
+	 * This method does not check that the parameters mSag, mLength, weight, force
+	 * and mPretension are consistent. Normally you should use method calculateSag()
 	 * instead.
 	 */
 	public double getSag()
 	{
-		return sag;
+		return mSag;
 	}
 	
 	public double getSagWithoutSlacker()
 	{
-		return sagWithoutSlacker;
+		return mSagWithoutSlacker;
 	}
 	
 	/**
-	 * This method does not check that the parameters sag, length, weight, force
-	 * and pretension are consistent. Normally you should use method calculateLenght()
+	 * This method does not check that the parameters mSag, mLength, weight, force
+	 * and mPretension are consistent. Normally you should use method calculateLenght()
 	 * instead.
 	 */
 	public double getLength()
 	{
-		return length;
+		return mLength;
 	}
 	
 	/**
-	 * This method does not check that the parameters sag, length, weight, force
-	 * and pretension are consistent. Normally you should use method calculateWeight()
+	 * This method does not check that the parameters mSag, mLength, weight, force
+	 * and mPretension are consistent. Normally you should use method calculateWeight()
 	 * instead.
 	 */
 	public double getWeightOfSlackliner()
 	{
-		return weightOfSlackliner;
+		return mWeightOfSlackliner;
 	}
 	/**
-	 * This method does not check that the parameters sag, length, weight, force
-	 * and pretension are consistent. Normally you should use method calculateVerticalForce()
+	 * This method does not check that the parameters mSag, mLength, weight, force
+	 * and mPretension are consistent. Normally you should use method calculateVerticalForce()
 	 * instead.
 	 */
 	public double getVerticalForce()
 	{
-		return verticalForce;
+		return mVerticalForce;
 	}
 	/**
-	 * This method returns the current anchorForce calculated from the pretension.
-	 * The anchorForce does not get calculated from the current sag, length and
-	 * verticalForce Values. To do this use the method caculateAnchorForce().
+	 * This method returns the current mAnchorForce calculated from the mPretension.
+	 * The mAnchorForce does not get calculated from the current mSag, mLength and
+	 * mVerticalForce Values. To do this use the method caculateAnchorForce().
 	 */
-	public double getAnchorForce()
+	public double getmAnchorForce()
 	{
-		return anchorForce;
+		return mAnchorForce;
 	}
 	
 	/**
-	 * This method does not check that the parameters sag, length, weight, force
-	 * and pretension are consistent. Normally you should use method calculatePretension()
+	 * This method does not check that the parameters mSag, mLength, weight, force
+	 * and mPretension are consistent. Normally you should use method calculatePretension()
 	 * instead.
 	 */
 	public double getPretension()
 	{
-		return pretension;
+		return mPretension;
 	}
 
-	public Webbing getWebbing()
+	public double getStretchCoefficient()
 	{
-		return webbing;
+		return mWebbing.getStretchCoefficient();
 	}
+
+	public String getWebbingName()
+	{
+		return mWebbing.getName();
+	}
+
+
 	
 	public void setSag(double sag)
 	{
-		this.sag = sag;
-		if(this.sag < 0)
-			this.sag = 0;
+		this.mSag = sag;
+		if(this.mSag < 0)
+			this.mSag = 0;
 	}
 
 	public void setSagWithoutSlacker(double sag)
 	{
-		sagWithoutSlacker = sag;
+		mSagWithoutSlacker = sag;
 		isPretensionConstant = true;
 		
-		if(sagWithoutSlacker < 0)
-			sagWithoutSlacker = 0;
+		if(mSagWithoutSlacker < 0)
+			mSagWithoutSlacker = 0;
 		
-		if(sagWithoutSlacker > 0)
+		if(mSagWithoutSlacker > 0)
 		{
-			pretension = 0;
+			mPretension = 0;
 		}
 	}
 	public void setLength(double length)
 	{
-		this.length = length;
-		if(this.length < 0)
-			this.length = 0;
+		this.mLength = length;
+		if(this.mLength < 0)
+			this.mLength = 0;
 	}
 	
 	/**
@@ -146,48 +153,48 @@ public class SlacklineCalculations
 	 */
 	public void setWeightOfSlackliner(double weightOfSlackliner)
 	{
-		this.weightOfSlackliner = weightOfSlackliner;
+		this.mWeightOfSlackliner = weightOfSlackliner;
 		setVerticalForce(weightOfSlackliner * GRAVITY_ACCELERATION);
 	}
 	public void setVerticalForce(double force)
 	{
-		this.verticalForce = force;
+		this.mVerticalForce = force;
 	}
 	/**
-	 * setting the AnchorForce causes the pretension to get calculated from the
-	 * current sag, length, verticalForce and the force given as parameter.
+	 * setting the AnchorForce causes the mPretension to get calculated from the
+	 * current mSag, mLength, mVerticalForce and the force given as parameter.
 	 * @param force
 	 */
-	public void setAnchorForce(double force)
+	public void setmAnchorForce(double force)
 	{
-		if(force < 0.5*verticalForce)
+		if(force < 0.5* mVerticalForce)
 		{
 			// todo maybe throw exeption or do some error handling
 			return;
 		}
 
-		this.anchorForce = force;
+		this.mAnchorForce = force;
 		isPretensionConstant = false;
 
 		calculatePretensionFromAnchorForce();
 		
-		//setPretension(pretension);
+		//setPretension(mPretension);
 	}
 	
 	/**
-	 * when the pretension gets set the tension on the anchor is automatically
+	 * when the mPretension gets set the tension on the anchor is automatically
 	 * recalculated avoid inconsistent values.
 	 * @param pretension
 	 */
 	public void setPretension(double pretension)
 	{
-		this.pretension = pretension;
+		this.mPretension = pretension;
 		isPretensionConstant = true;
 		
-		if(this.pretension < 0)
-			this.pretension = 0;
+		if(this.mPretension < 0)
+			this.mPretension = 0;
 		
-		if(this.pretension > 0)
+		if(this.mPretension > 0)
 		{
 			setSagWithoutSlacker(0);
 		}
@@ -195,17 +202,17 @@ public class SlacklineCalculations
 
 	public void setWebbing(Webbing webbing)
 	{
-		this.webbing = webbing;
+		this.mWebbing = webbing;
 	}
 	
 
 
 	public double calculateAnchorForce()
 	{
-		anchorForce = (Math.sqrt(sag*sag + length*length / 4) * verticalForce) / (2 * sag);
+		mAnchorForce = (Math.sqrt(mSag * mSag + mLength * mLength / 4) * mVerticalForce) / (2 * mSag);
 		
-		//setAnchorForce(anchorForce);
-		return anchorForce;
+		//setmAnchorForce(mAnchorForce);
+		return mAnchorForce;
 	}
 	public double calculatePretension()
 	{
@@ -225,12 +232,12 @@ public class SlacklineCalculations
 			calculateAnchorForceFromPretension();
 		}
 
-		verticalForce = calculateVerticalForceFromAnchorForce();
+		mVerticalForce = calculateVerticalForceFromAnchorForce();
 
 		if (!isPretensionConstant)
 			calculatePretensionFromAnchorForce();
 
-		return verticalForce;
+		return mVerticalForce;
 		
 	}
 
@@ -241,14 +248,14 @@ public class SlacklineCalculations
 		{
 			calculateSagFromPretension();
 			calculateAnchorForce();
-			return sag;
+			return mSag;
 		}
 		else
 		{
 			calculateSagFromAnchorForce();
 			calculatePretensionFromAnchorForce();
 		}
-		return sag;
+		return mSag;
 	}
 
 	public double calculateLength()
@@ -257,175 +264,178 @@ public class SlacklineCalculations
 		{
 			calculateLengthFromPretension();
 			calculateAnchorForce();
-			return length;
+			return mLength;
 		}
 		else
 		{
 			calculateLengthFromAnchorForce();
 			calculatePretensionFromAnchorForce();
 		}
-		return length;
+		return mLength;
 	}
 
 
-
+//	private Webbing getWebbing()
+//	{
+//		return mWebbing;
+//	}
 
 	private double calculateVerticalForceFromAnchorForce()
 	{
-		return (2 * sag * anchorForce) / (Math.sqrt(sag*sag + length*length/4));
+		return (2 * mSag * mAnchorForce) / (Math.sqrt(mSag * mSag + mLength * mLength /4));
 	}
 
 	private double calculateVerticalForceFromWeight()
 	{
-		return weightOfSlackliner * GRAVITY_ACCELERATION;
+		return mWeightOfSlackliner * GRAVITY_ACCELERATION;
 	}
 
 	private double calculateSagFromAnchorForce()
 	{
-		sag = Math.sqrt((verticalForce * verticalForce * length * length) /
-				(4 * (4 * anchorForce * anchorForce - verticalForce * verticalForce)));
-		return sag;
+		mSag = Math.sqrt((mVerticalForce * mVerticalForce * mLength * mLength) /
+				(4 * (4 * mAnchorForce * mAnchorForce - mVerticalForce * mVerticalForce)));
+		return mSag;
 	}
 
 	/**
-	 * normally the sag is calculated by the current AnchorForce. As the relationship between
-	 * the anchorForce and the Pretension is dependent on the sag, the pretension will change,too.
-	 * If you want to keep the pretension constant you should use this method. As the mathematical
+	 * normally the mSag is calculated by the current AnchorForce. As the relationship between
+	 * the mAnchorForce and the Pretension is dependent on the mSag, the mPretension will change,too.
+	 * If you want to keep the mPretension constant you should use this method. As the mathematical
 	 * formula for this calculation is much more complicated an iterative approach is used. The
 	 * Pretension is guarantied to change less than 0.1 N.
 	 *
-	 * @return the calculated sag
+	 * @return the calculated mSag
 	 */
 	private double calculateSagFromPretension()
 	{
-		if (pretension <= 0 && sagWithoutSlacker > 0)
+		if (mPretension <= 0 && mSagWithoutSlacker > 0)
 			return calculateSagFromSagWithoutSlacker();
 
-		sag = iterativeApproximation(new SagFromPretensionIterative(), 1e-4, 1e4);
+		mSag = iterativeApproximation(new SagFromPretensionIterative(), 1e-4, 1e4);
 
 		//calculateAnchorForce();
 
-		return sag;
+		return mSag;
 	}
 
 	private double calculateSagFromSagWithoutSlacker()
 	{
-		if(sagWithoutSlacker <= 0 && pretension > 0)
+		if(mSagWithoutSlacker <= 0 && mPretension > 0)
 		{
 			return calculateSagFromPretension();
 		}
-		sag = iterativeApproximation(new SagFromSagWithoutSlackerIterative(), 1e-6, 1e6);
+		mSag = iterativeApproximation(new SagFromSagWithoutSlackerIterative(), 1e-6, 1e6);
 		//calculateAnchorForce();
-		return sag;
+		return mSag;
 
 	}
 
 	private double calculateLengthFromAnchorForce()
 	{
-		double anchorForce = getAnchorForce();
-		length =  Math.sqrt((4 * sag * (4 * anchorForce * anchorForce - verticalForce * verticalForce)) /
-				(verticalForce * verticalForce));
-		return length;
+		double anchorForce = getmAnchorForce();
+		mLength =  Math.sqrt((4 * mSag * (4 * anchorForce * anchorForce - mVerticalForce * mVerticalForce)) /
+				(mVerticalForce * mVerticalForce));
+		return mLength;
 	}
 
 	private double calculateLengthFromPretension()
 	{
-		if (pretension <= 0 && sagWithoutSlacker > 0)
+		if (mPretension <= 0 && mSagWithoutSlacker > 0)
 			return calculateLengthFromSagWithoutSlackliner();
 
-		length = iterativeApproximation(new LengthFromPretensionIterative(), 1e-6, 1e6);
+		mLength = iterativeApproximation(new LengthFromPretensionIterative(), 1e-6, 1e6);
 
 		//calculateAnchorForce();
 		//calculatePretensionFromAnchorForce();
 
-		return length;
+		return mLength;
 	}
 
 	private double calculateLengthFromSagWithoutSlackliner()
 	{
-		if (sagWithoutSlacker <= 0 && pretension > 0)
+		if (mSagWithoutSlacker <= 0 && mPretension > 0)
 			return calculateLengthFromPretension();
 
 
-		length = iterativeApproximation(new LengthFromSagWithoutSlackerIterative(), 1e-4, 1e4);
+		mLength = iterativeApproximation(new LengthFromSagWithoutSlackerIterative(), 1e-4, 1e4);
 		//calculateAnchorForce();
-		return length;
+		return mLength;
 	}
 
 
 	private double calculatePretensionFromAnchorForce()
 	{
-		if(webbing == null || webbing.getStretchCoefficient() == 0)
+		if(mWebbing == null || mWebbing.getStretchCoefficient() == 0)
 		{
-			if(sag > 0)
+			if(mSag > 0)
 			{
-				pretension = 0;
-				sagWithoutSlacker = sag;
+				mPretension = 0;
+				mSagWithoutSlacker = mSag;
 			}
 			else
-				pretension = anchorForce;
+				mPretension = mAnchorForce;
 		}
 		else
 		{
-			pretension = anchorForce - ((2 * Math.sqrt(sag*sag + length*length / 4) - length) / (webbing.getStretchCoefficient() * length));
+			mPretension = mAnchorForce - ((2 * Math.sqrt(mSag * mSag + mLength * mLength / 4) - mLength) / (mWebbing.getStretchCoefficient() * mLength));
 
 		}
-		if (pretension <= 0)
+		if (mPretension <= 0)
 		{
-			pretension = 0;
-			sagWithoutSlacker = Math.sqrt( (Math.pow(length,2)/4 + sag*sag) / Math.pow(1 + webbing.getStretchCoefficient() * anchorForce,2) - Math.pow(length,2)/4);
+			mPretension = 0;
+			mSagWithoutSlacker = Math.sqrt( (Math.pow(mLength,2)/4 + mSag * mSag) / Math.pow(1 + mWebbing.getStretchCoefficient() * mAnchorForce,2) - Math.pow(mLength,2)/4);
 		}
 		else
-			sagWithoutSlacker = 0;
-		return pretension;
+			mSagWithoutSlacker = 0;
+		return mPretension;
 	}
 
 	/**
-	 * This method calculates the AnchorForce from the pretension of the Line. For the calculation
-	 * a constant length and sag are assumed. Therefore it is not possible to use that function
-	 * for calculating the length or the sag of the line.
+	 * This method calculates the AnchorForce from the mPretension of the Line. For the calculation
+	 * a constant mLength and mSag are assumed. Therefore it is not possible to use that function
+	 * for calculating the mLength or the mSag of the line.
 	 * @return
 	 */
 	private double calculateAnchorForceFromPretension()
 	{
 
-		if(pretension == 0 && sagWithoutSlacker > 0)
+		if(mPretension == 0 && mSagWithoutSlacker > 0)
 			return calculateAnchorForceFromSagWithoutSlackliner();
 
-		if(webbing == null || webbing.getStretchCoefficient() == 0)
+		if(mWebbing == null || mWebbing.getStretchCoefficient() == 0)
 		{
-			anchorForce = pretension;
+			mAnchorForce = mPretension;
 		}
 		else
 		{
-			anchorForce = pretension + ((2 * Math.sqrt(sag * sag + length * length / 4) - length) / (webbing.getStretchCoefficient() * length));
+			mAnchorForce = mPretension + ((2 * Math.sqrt(mSag * mSag + mLength * mLength / 4) - mLength) / (mWebbing.getStretchCoefficient() * mLength));
 		}
 
-		return anchorForce;
+		return mAnchorForce;
 	}
 
 	/**
-	 * This method calculates the AnchorForce from the sag without a Slacker on a rodeo line. For the calculation
-	 * a constant length and sag are assumed. Therefore it is not possible to use that function
-	 * for calculating the length or the sag of the line.
+	 * This method calculates the AnchorForce from the mSag without a Slacker on a rodeo line. For the calculation
+	 * a constant mLength and mSag are assumed. Therefore it is not possible to use that function
+	 * for calculating the mLength or the mSag of the line.
 	 * @return
 	 */
 	private double calculateAnchorForceFromSagWithoutSlackliner()
 	{
-		if(sagWithoutSlacker == 0 && pretension > 0)
+		if(mSagWithoutSlacker == 0 && mPretension > 0)
 			return calculateAnchorForceFromPretension();
 
-		if(webbing == null || webbing.getStretchCoefficient() == 0)
+		if(mWebbing == null || mWebbing.getStretchCoefficient() == 0)
 		{
-			anchorForce = (Math.sqrt(Math.pow(sagWithoutSlacker, 2) + Math.pow(length, 2) / 4) * verticalForce) / (2*sagWithoutSlacker);
+			mAnchorForce = (Math.sqrt(Math.pow(mSagWithoutSlacker, 2) + Math.pow(mLength, 2) / 4) * mVerticalForce) / (2* mSagWithoutSlacker);
 		}
 		else
-			anchorForce = (Math.sqrt( (Math.pow(length,2)/4 + sag*sag) / (Math.pow(sagWithoutSlacker, 2) + Math.pow(length,2)/4 )) - 1) / webbing.getStretchCoefficient();
+			mAnchorForce = (Math.sqrt( (Math.pow(mLength,2)/4 + mSag * mSag) / (Math.pow(mSagWithoutSlacker, 2) + Math.pow(mLength,2)/4 )) - 1) / mWebbing.getStretchCoefficient();
 
-		if(anchorForce 	< 0)
-			anchorForce = 0;
+		if(mAnchorForce < 0)
+			mAnchorForce = 0;
 
-		return anchorForce;
+		return mAnchorForce;
 	}
 
 	interface itarativeApproximationFunction
@@ -436,34 +446,34 @@ public class SlacklineCalculations
 	class LengthFromPretensionIterative implements itarativeApproximationFunction {
 		@Override
 		public double getFunctionValue(double length) {
-			double l1 = Math.sqrt(sag*sag + length*length/4);
-			return l1 * (verticalForce/(2*sag) - 2/(webbing.getStretchCoefficient()*length)) - pretension + 1/webbing.getStretchCoefficient();
+			double l1 = Math.sqrt(mSag * mSag + length*length/4);
+			return l1 * (mVerticalForce /(2* mSag) - 2/(mWebbing.getStretchCoefficient()*length)) - mPretension + 1/ mWebbing.getStretchCoefficient();
 		}
 	}
 	class SagFromPretensionIterative implements itarativeApproximationFunction {
 		@Override
 		public double getFunctionValue(double sag) {
-			double l1 = Math.sqrt(sag*sag + length*length/4);
-			return l1 * (verticalForce/(2*sag) - 2/(webbing.getStretchCoefficient()*length)) - pretension + 1/webbing.getStretchCoefficient();
+			double l1 = Math.sqrt(sag*sag + mLength * mLength /4);
+			return l1 * (mVerticalForce /(2*sag) - 2/(mWebbing.getStretchCoefficient()* mLength)) - mPretension + 1/ mWebbing.getStretchCoefficient();
 		}
 	}
 
 	class LengthFromSagWithoutSlackerIterative implements itarativeApproximationFunction {
 		@Override
 		public double getFunctionValue(double length) {
-			double l1 = Math.sqrt(sagWithoutSlacker*sagWithoutSlacker + length*length/4);
-			double l2 = Math.sqrt(sag*sag + length*length/4);
-			double stretch = webbing.getStretchCoefficient();
-			return (l2/l1 - 1) / stretch - l2 * verticalForce / (2*sag);
+			double l1 = Math.sqrt(mSagWithoutSlacker * mSagWithoutSlacker + length*length/4);
+			double l2 = Math.sqrt(mSag * mSag + length*length/4);
+			double stretch = mWebbing.getStretchCoefficient();
+			return (l2/l1 - 1) / stretch - l2 * mVerticalForce / (2* mSag);
 		}
 	}
 	class SagFromSagWithoutSlackerIterative implements itarativeApproximationFunction {
 		@Override
 		public double getFunctionValue(double sag) {
-			double l1 = Math.sqrt(sagWithoutSlacker*sagWithoutSlacker + length*length/4);
-			double l2 = Math.sqrt(sag*sag + length*length/4);
-			double stretch = webbing.getStretchCoefficient();
-			return (l2/l1 - 1) / stretch - l2 * verticalForce / (2*sag);
+			double l1 = Math.sqrt(mSagWithoutSlacker * mSagWithoutSlacker + mLength * mLength /4);
+			double l2 = Math.sqrt(sag*sag + mLength * mLength /4);
+			double stretch = mWebbing.getStretchCoefficient();
+			return (l2/l1 - 1) / stretch - l2 * mVerticalForce / (2*sag);
 		}
 	}
 

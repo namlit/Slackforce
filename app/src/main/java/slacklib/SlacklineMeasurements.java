@@ -1,52 +1,63 @@
 package slacklib;
 
-import java.math.*;
-
-import slacklib.Manufacturer;
-import slacklib.Webbing;
-
 public class SlacklineMeasurements
 {
-	private Webbing webbing;
-	private double length; // [m]
+	private Webbing mWebbing;
+	private double mLength; // [m]
 	//private double timeOfOscillation; // [s]
 	
 	public SlacklineMeasurements()
 	{
-		webbing = new Webbing();
-		length = 100;
+		mWebbing = new Webbing();
+		mLength = 100;
 	}
 
-	public Webbing getWebbing()
+
+	public double getStretchCoefficient()
 	{
-		return webbing;
+		return mWebbing.getStretchCoefficient();
+	}
+
+	public double getWeightPerMeter()
+	{
+		return mWebbing.getWeightPerMeter();
+	}
+
+	public String getWebbingName()
+	{
+		return mWebbing.getName();
 	}
 
 	public void setWebbing(Webbing webbing)
 	{
-		this.webbing = webbing;
+		this.mWebbing = webbing;
 	}
 
 	public double getLength()
 	{
-		return length;
+		return mLength;
 	}
 
 	public void setLength(double length)
 	{
-		this.length = length;
+		this.mLength = length;
 	}
 
 	public double calculateForce(double timeOfOscillation)
 	{
-		if (webbing == null)
+		if (mWebbing == null)
 			return 0;
-		if (webbing.getStretchCoefficient() == 0)
+		if (mWebbing.getStretchCoefficient() == 0)
 		{
-			return (webbing.getWeightPerMeter() * 4 * length*length) / (timeOfOscillation*timeOfOscillation);
+			return (mWebbing.getWeightPerMeter() * 4 * mLength * mLength) / (timeOfOscillation*timeOfOscillation);
 		}
-		return (Math.sqrt(1 / (4 * Math.pow(webbing.getStretchCoefficient(), 2)) + (webbing.getWeightPerMeter() * 4 * length*length) / 
-				(webbing.getStretchCoefficient() * Math.pow(timeOfOscillation, 2))) - 1 / (2 * webbing.getStretchCoefficient()) );
+		return (Math.sqrt(1 / (4 * Math.pow(mWebbing.getStretchCoefficient(), 2)) + (mWebbing.getWeightPerMeter() * 4 * mLength * mLength) /
+				(mWebbing.getStretchCoefficient() * Math.pow(timeOfOscillation, 2))) - 1 / (2 * mWebbing.getStretchCoefficient()) );
 	}
-	
+
+
+//	private Webbing getWebbing()
+//	{
+//		return mWebbing;
+//	}
 }

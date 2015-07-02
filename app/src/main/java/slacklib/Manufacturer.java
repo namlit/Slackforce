@@ -2,14 +2,12 @@ package slacklib;
 
 import java.util.*;
 
-import slacklib.Webbing;
-
 public class Manufacturer 
 {
 	private static List<Manufacturer> manufacturers = new LinkedList<Manufacturer>();
 	
-	private String name;
-	private List<Webbing> webbings;
+	private String mName;
+	private List<Webbing> mWebbings;
 	
 	private static void addManufactorer(Manufacturer manufactorer)
 	{
@@ -33,8 +31,8 @@ public class Manufacturer
 	
 	public Manufacturer(String name)
 	{
-		webbings = new LinkedList<Webbing>();
-		this.name = name;
+		mWebbings = new LinkedList<Webbing>();
+		this.mName = name;
 		addManufactorer(this);
 	}
 	
@@ -42,38 +40,38 @@ public class Manufacturer
 	
 	public String getName()
 	{
-		return name;
+		return mName;
 	}
 
 
 	public void setName(String name)
 	{
-		this.name = name;
+		this.mName = name;
 	}
 
 	public boolean equals(Manufacturer manufactorer)
 	{
-		return name.equals(manufactorer.getName());
+		return mName.equals(manufactorer.getName());
 	}
 	
 	@Override public String toString()
 	{
-		return name;
+		return mName;
 	}
 	
 	public void addWebbing(String name, double weightPerMeter, double stretchCoefficient, double breakingStrength, double width)
 	{
-		webbings.add(new Webbing(name, this, weightPerMeter, stretchCoefficient, breakingStrength, width));
+		mWebbings.add(new Webbing(name, this, weightPerMeter, stretchCoefficient, breakingStrength, width));
 	}
 	
 	public void addWebbing(Webbing webbing)
 	{
-		webbings.add(webbing);
+		mWebbings.add(webbing);
 	}
 	
 	public List<Webbing> getWebbings()
 	{
-		return webbings;
+		return mWebbings;
 	}
 
 	public Webbing getWebbingByID(int id)

@@ -285,9 +285,9 @@ public class MeasureForceFragment extends Fragment {
 
     private  void updateTextFields()
     {
-        mWebbingButton.setText(mSlacklineMeasurements.getWebbing().toString());
-        mStretch.setText(String.format(Locale.ENGLISH, "%.2f", mSlacklineMeasurements.getWebbing().getStretchCoefficient() / 1e-6));
-        mLineWeight.setText(String.format(Locale.ENGLISH, "%.1f", mSlacklineMeasurements.getWebbing().getWeightPerMeter() * 1e3 ));
+        mWebbingButton.setText(mSlacklineMeasurements.getWebbingName());
+        mStretch.setText(String.format(Locale.ENGLISH, "%.2f", mSlacklineMeasurements.getStretchCoefficient() / 1e-6));
+        mLineWeight.setText(String.format(Locale.ENGLISH, "%.1f", mSlacklineMeasurements.getWeightPerMeter() * 1e3 ));
         mLength.setText(String.format(Locale.ENGLISH, "%.1f", mSlacklineMeasurements.getLength()));
     }
 
@@ -295,7 +295,7 @@ public class MeasureForceFragment extends Fragment {
     {
         double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
         double lineWeight = Double.valueOf(mLineWeight.getText().toString()) / 1e3;
-        if (mSlacklineMeasurements.getWebbing().getStretchCoefficient() != stretch || mSlacklineMeasurements.getWebbing().getWeightPerMeter() != lineWeight)
+        if (mSlacklineMeasurements.getStretchCoefficient() != stretch || mSlacklineMeasurements.getWeightPerMeter() != lineWeight)
         {
             mSlacklineMeasurements.setWebbing(new Webbing("Custom", lineWeight, stretch));
         }

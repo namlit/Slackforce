@@ -97,11 +97,11 @@ public class DynamicForceFragment extends Fragment {
         mMaxLineForce = (TextView) view.findViewById(R.id.maxLineForce);
         mMaxSag = (TextView) view.findViewById(R.id.maxSag);
 
-        mWebbing.setText(mBounceSimulations.getSlackCalc().getWebbing().toString());
-        mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getWebbing().getStretchCoefficient() / 1e-6));
-        mLength.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getLength()));
-        mPretension.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getPretension()/1e3 ));
-        mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getWeightOfSlackliner() ));
+        mWebbing.setText(mBounceSimulations.getWebbingName());
+        mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getStretchCoefficient() / 1e-6));
+        mLength.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getLength()));
+        mPretension.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getPretension()/1e3 ));
+        mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getWeight() ));
         mHeightOfFallEditText.setText(String.format(Locale.ENGLISH, "%.1f", mHeightOfFallValue));
 
         updateTextFields();
@@ -257,10 +257,10 @@ public class DynamicForceFragment extends Fragment {
                 int manufacturerID = data.getIntExtra("MANUFACTURER_ID", 0);
                 int webbingID = data.getIntExtra("WEBBING_ID", 0);
 
-                mBounceSimulations.getSlackCalc().setWebbing(Manufacturer.getManufacturerByID(manufacturerID).getWebbingByID(webbingID));
+                mBounceSimulations.setWebbing(Manufacturer.getManufacturerByID(manufacturerID).getWebbingByID(webbingID));
 
-                mWebbing.setText(mBounceSimulations.getSlackCalc().getWebbing().toString());
-                mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getWebbing().getStretchCoefficient() / 1e-6));
+                mWebbing.setText(mBounceSimulations.getWebbingName());
+                mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getStretchCoefficient() / 1e-6));
 
                 calculateDynamicForces();
             }
@@ -286,12 +286,12 @@ public class DynamicForceFragment extends Fragment {
 
     private  void updateTextFields()
     {
-        mWebbing.setText(mBounceSimulations.getSlackCalc().getWebbing().toString());
-        mStretch.setText(String.format(Locale.ENGLISH, "%.2f", mBounceSimulations.getSlackCalc().getWebbing().getStretchCoefficient() / 1e-6));
-        mLength.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getLength()));
-        mPretension.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getPretension() / 1e3 ));
-        mInitialSag.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getSagWithoutSlacker()));
-        mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getSlackCalc().getWeightOfSlackliner()));
+        mWebbing.setText(mBounceSimulations.getWebbingName());
+        mStretch.setText(String.format(Locale.ENGLISH, "%.2f", mBounceSimulations.getStretchCoefficient() / 1e-6));
+        mLength.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getLength()));
+        mPretension.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getPretension() / 1e3 ));
+        mInitialSag.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getInitialSag()));
+        mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getWeight()));
         mHeightOfFallEditText.setText(String.format(Locale.ENGLISH, "%.1f", mHeightOfFallValue));
     }
 
@@ -300,10 +300,10 @@ public class DynamicForceFragment extends Fragment {
         try
         {
             double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
-            if (mBounceSimulations.getSlackCalc().getWebbing().getStretchCoefficient() != stretch)
+            if (mBounceSimulations.getStretchCoefficient() != stretch)
             {
-                mBounceSimulations.getSlackCalc().setWebbing(new Webbing("Custom", stretch));
-                mWebbing.setText(mBounceSimulations.getSlackCalc().getWebbing().toString());
+                mBounceSimulations.setWebbing(new Webbing("Custom", stretch));
+                mWebbing.setText(mBounceSimulations.getWebbingName());
             }
 
             double length = Double.valueOf(mLength.getText().toString());
@@ -312,14 +312,14 @@ public class DynamicForceFragment extends Fragment {
             double weight = Double.valueOf(mWeight.getText().toString());
             mHeightOfFallValue =  Double.valueOf(mHeightOfFallEditText.getText().toString());
 
-            mBounceSimulations.getSlackCalc().setLength(length);
+            mBounceSimulations.setLength(length);
 
-            if (pretension != mBounceSimulations.getSlackCalc().getPretension())
-                mBounceSimulations.getSlackCalc().setPretension(pretension);
+            if (pretension != mBounceSimulations.getPretension())
+                mBounceSimulations.setPretension(pretension);
             else
-                mBounceSimulations.getSlackCalc().setSagWithoutSlacker(initialSag);
+                mBounceSimulations.setInitialSag(initialSag);
 
-            mBounceSimulations.getSlackCalc().setWeightOfSlackliner(weight);
+            mBounceSimulations.setWeight(weight);
 
         } catch (Throwable t) {
 

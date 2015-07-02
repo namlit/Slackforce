@@ -304,8 +304,8 @@ public class CalcForceFragment extends Fragment {
 
                 mSlackineCalculations.setWebbing(Manufacturer.getManufacturerByID(manufacturerID).getWebbingByID(webbingID));
 
-                mWebbing.setText(mSlackineCalculations.getWebbing().toString());
-                mStretch.setText( String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getWebbing().getStretchCoefficient() / 1e-6));
+                mWebbing.setText(mSlackineCalculations.getWebbingName());
+                mStretch.setText( String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getStretchCoefficient() / 1e-6));
 
                 updateCalculations();
             }
@@ -328,7 +328,7 @@ public class CalcForceFragment extends Fragment {
             switch (mParameterChanged) {
                 case STRETCH:
                     double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
-                    if (mSlackineCalculations.getWebbing().getStretchCoefficient() != stretch)
+                    if (mSlackineCalculations.getStretchCoefficient() != stretch)
                         mSlackineCalculations.setWebbing(new Webbing("Custom", stretch));
                     break;
 
@@ -349,7 +349,7 @@ public class CalcForceFragment extends Fragment {
 
                 case FORCE:
                     double force = Double.valueOf(mForce.getText().toString());
-                    mSlackineCalculations.setAnchorForce(force * 1e3);
+                    mSlackineCalculations.setmAnchorForce(force * 1e3);
                     break;
 
                 case PRETENSION:
@@ -407,12 +407,12 @@ public class CalcForceFragment extends Fragment {
 
     private void updateAllTextFields()
     {
-        mWebbing.setText(mSlackineCalculations.getWebbing().toString());
-        mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getWebbing().getStretchCoefficient() / 1e-6));
+        mWebbing.setText(mSlackineCalculations.getWebbingName());
+        mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getStretchCoefficient() / 1e-6));
         mLength.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getLength()));
         mSag.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getSag()));
         mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getWeightOfSlackliner()));
-        mForce.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getAnchorForce()/1e3 ));
+        mForce.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getmAnchorForce()/1e3 ));
         mPretension.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getPretension() / 1e3));
         mSagWithoutSlacker.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getSagWithoutSlacker()));
     }

@@ -1,17 +1,10 @@
 package slacklib;
 
-import static java.lang.System.out;
 import java.io.*;
-import java.math.*;
-import java.util.*;
 
-import slacklib.Manufacturer;
-import slacklib.Webbing;
-
-public class SlacklineBounceSimulations
-{
+public class SlacklineBounceSimulations {
 	private final double gravityAcceleration = 9.81;
-	
+
 	private SlacklineCalculations slackCalc;
 	private double speedOfSlackliner; // direction downwards
 	private double verticalPositionOfSlackliner; // corresponds to -sag of slackline for positive values
@@ -24,61 +17,51 @@ public class SlacklineBounceSimulations
 	 * deltaT = 0.0001: 0.014m deviation in max height at 28,58s
 	 * deltaT = 0.00005: 0.007m deviation in max height at 28.57s (10 jumps)
 	 */
-	
-	public SlacklineBounceSimulations()
-	{
+
+	public SlacklineBounceSimulations() {
 		slackCalc = new SlacklineCalculations();
 		//deltaT = 0.001;
 	}
-	
-	public SlacklineBounceSimulations(SlacklineCalculations slackCalc)
-	{
+
+	public SlacklineBounceSimulations(SlacklineCalculations slackCalc) {
 		this.slackCalc = slackCalc;
 		//deltaT = 0.001;
 	}
-	
-	private double getKineticEnergy()
-	{
+
+	private double getKineticEnergy() {
 		return 0.5 * slackCalc.getWeightOfSlackliner() * speedOfSlackliner * speedOfSlackliner;
 	}
-	
-	private void setSpeedFromEkin(double Ekin)
-	{
+
+	private void setSpeedFromEkin(double Ekin) {
 		speedOfSlackliner = Math.sqrt((2 * Ekin) / slackCalc.getWeightOfSlackliner());
 	}
-	
-	private void iterationStep()
-	{
+
+	private void iterationStep() {
 		//double Ekin = 0.5 * slackCalc.getWeightOfSlackliner() * speedOfSlackliner * speedOfSlackliner;
 		double m = slackCalc.getWeightOfSlackliner();
 		slackCalc.setSag(-verticalPositionOfSlackliner);
 		double F = m * gravityAcceleration - slackCalc.calculateVerticalForce(); // orientation downwards
-		
+
 		double a = F / m; // orientation downwards
 		double deltaV = a * deltaT; // orientation downwards
 		double deltaS = 0.5 * a * deltaT * deltaT + speedOfSlackliner * deltaT; // orientation downwards
-		
+
 		verticalPositionOfSlackliner -= deltaS;
 		speedOfSlackliner += deltaV;
-		
+
 	}
-	
-	public double[] calculateMaximumForces(double heightOfFall)
-	{
-		if (heightOfFall < 0)
-		{
+
+	public double[] calculateMaximumForces(double heightOfFall) {
+		if (heightOfFall < 0) {
 			verticalPositionOfSlackliner = heightOfFall;
 			speedOfSlackliner = 0;
-		}
-		else
-		{
+		} else {
 			verticalPositionOfSlackliner = 0;
 			double Ekin = slackCalc.getWeightOfSlackliner() * gravityAcceleration * heightOfFall; // Ekin = Epot
 			setSpeedFromEkin(Ekin);
 		}
-		
-		do
-		{
+
+		do {
 			iterationStep();
 		} while (speedOfSlackliner > 0);
 
@@ -86,99 +69,142 @@ public class SlacklineBounceSimulations
 		double vForce = slackCalc.getVerticalForce();
 		forces[0] = vForce / (slackCalc.getWeightOfSlackliner() * slackCalc.GRAVITY_ACCELERATION);
 		forces[1] = vForce;
-		forces[2] = slackCalc.getAnchorForce();
+		forces[2] = slackCalc.getmAnchorForce();
 		forces[3] = -verticalPositionOfSlackliner;
 		return forces;
 	}
 
-	public void simulateJumping(double jumpHeight, double simulationTime)
-	{
-		double time[] = new double[(int)(simulationTime / deltaT) + 1];
-		double verticalPos[] = new double[(int)(simulationTime / deltaT) + 1];
-		double anchorForce[] = new double[(int)(simulationTime / deltaT) + 1];
-		double verticalForce[] = new double[(int)(simulationTime / deltaT) + 1];
-		
+	public void simulateJumping(double jumpHeight, double simulationTime) {
+		double time[] = new double[(int) (simulationTime / deltaT) + 1];
+		double verticalPos[] = new double[(int) (simulationTime / deltaT) + 1];
+		double anchorForce[] = new double[(int) (simulationTime / deltaT) + 1];
+		double verticalForce[] = new double[(int) (simulationTime / deltaT) + 1];
+
 		verticalPositionOfSlackliner = jumpHeight;
 		speedOfSlackliner = 0;
-		
+
 		int i = 0;
-		for(double currentTime = 0; currentTime < simulationTime; currentTime += deltaT, i++)
-		{
+		for (double currentTime = 0; currentTime < simulationTime; currentTime += deltaT, i++) {
 			iterationStep();
 			time[i] = currentTime;
 			verticalPos[i] = verticalPositionOfSlackliner;
-			anchorForce[i] = slackCalc.getAnchorForce(); //calculateAnchorForce?
+			anchorForce[i] = slackCalc.getmAnchorForce(); //calculateAnchorForce?
 			verticalForce[i] = slackCalc.getVerticalForce();
-			
-			//out.printf("Time, Pos, Fv, Fh:\t%.3f\t%.3f\t%.0f\t%.0f\n", currentTime, verticalPositionOfSlackliner, slackCalc.getVerticalForce(), slackCalc.getAnchorForce());
+
+			//out.printf("Time, Pos, Fv, Fh:\t%.3f\t%.3f\t%.0f\t%.0f\n", currentTime, verticalPositionOfSlackliner, slackCalc.getVerticalForce(), slackCalc.getmAnchorForce());
 		}
 		writeSimulationResultToCSVFile(time, verticalPos, anchorForce, verticalForce, "simulation.csv");
 	}
-	
+
 	private void writeSimulationResultToCSVFile(double time[], double verticalPos[], double anchorForce[],
-			double verticalForce[], String filename)
-	{
+												double verticalForce[], String filename) {
 		//File csvFile = new File(filename);
-		
+
 		Writer csvFile = null;
 
-		try
-		{
-			csvFile = new FileWriter( filename );
-			for(int i = 0; i < time.length; i++)
-			{
-				csvFile.append( time[i] + "," + verticalPos[i] + "," + verticalForce[i] + "," + anchorForce[i] + "\n");
+		try {
+			csvFile = new FileWriter(filename);
+			for (int i = 0; i < time.length; i++) {
+				csvFile.append(time[i] + "," + verticalPos[i] + "," + verticalForce[i] + "," + anchorForce[i] + "\n");
 			}
-			
+
+		} catch (IOException e) {
+			System.err.println("Konnte Datei nicht erstellen");
+		} finally {
+			if (csvFile != null)
+				try {
+					csvFile.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
-		catch ( IOException e ) {
-		  System.err.println( "Konnte Datei nicht erstellen" );
-		}
-		finally {
-		  if ( csvFile != null )
-		    try { csvFile.close(); } catch ( IOException e ) { e.printStackTrace(); }
-		}
-		
-	}
-	
-	public SlacklineCalculations getSlackCalc()
-	{
-		return slackCalc;
+
 	}
 
-	public void setSlackCalc(SlacklineCalculations slackCalc)
-	{
+
+	public void setSlackCalc(SlacklineCalculations slackCalc) {
 		this.slackCalc = slackCalc;
 	}
 
-	public double getSpeedOfSlackliner()
-	{
+	public double getSpeedOfSlackliner() {
 		return speedOfSlackliner;
 	}
 
-	public void setSpeedOfSlackliner(double speedOfSlackliner)
-	{
+	public void setSpeedOfSlackliner(double speedOfSlackliner) {
 		this.speedOfSlackliner = speedOfSlackliner;
 	}
 
-	public double getVerticalPositionOfSlackliner()
-	{
+	public double getVerticalPositionOfSlackliner() {
 		return verticalPositionOfSlackliner;
 	}
 
-	public void setVerticalPositionOfSlackliner(double verticalPositionOfSlackliner)
-	{
+	public void setVerticalPositionOfSlackliner(double verticalPositionOfSlackliner) {
 		this.verticalPositionOfSlackliner = verticalPositionOfSlackliner;
 	}
 
-	public double getDeltaT()
-	{
+	public double getDeltaT() {
 		return deltaT;
 	}
 
-	public void setDeltaT(double deltaT)
-	{
+	public void setDeltaT(double deltaT) {
 		this.deltaT = deltaT;
 	}
+
+	public double getStretchCoefficient()
+	{
+		return slackCalc.getStretchCoefficient();
+	}
+
+	public String getWebbingName()
+	{
+		return slackCalc.getWebbingName();
+	}
+
+	public double getLength()
+	{
+		return slackCalc.getLength();
+	}
+
+	public double getPretension()
+	{
+		return slackCalc.getPretension();
+	}
+
+	public double getInitialSag()
+	{
+		return slackCalc.getSagWithoutSlacker();
+	}
+
+	public double getWeight()
+	{
+		return slackCalc.getWeightOfSlackliner();
+	}
+
+	public void setLength(double length) {
+		slackCalc.setLength(length);
+	}
+
+	public void setPretension(double pretension) {
+		slackCalc.setPretension(pretension);
+	}
+
+	public void setInitialSag(double initialSag) {
+		slackCalc.setSagWithoutSlacker(initialSag);
+	}
+
+	public void setWeight(double weight)
+	{
+		slackCalc.setWeightOfSlackliner(weight);
+	}
+
+	public void setWebbing(Webbing webbing)
+	{
+		slackCalc.setWebbing(webbing);
+	}
+
+//	private SlacklineCalculations getSlackCalc()
+//	{
+//		return slackCalc;
+//	}
 	
 }
