@@ -1,7 +1,10 @@
 package namlit.slackforce;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -317,15 +320,15 @@ public class CalcForceFragment extends Fragment {
                 updateCalculations();
             }
         }
-        if(requestCode == GET_PARAMETER_TO_CALCULATE_REQUEST)
-        {
-            if(resultCode == Activity.RESULT_OK)
-            {
-                mParameterToCalculate = (Parameter) data.getSerializableExtra("PARAMETER_TO_CALCULATE");
-                markParameterToCalculate();
-                update();
-            }
-        }
+//        if(requestCode == GET_PARAMETER_TO_CALCULATE_REQUEST)
+//        {
+//            if(resultCode == Activity.RESULT_OK)
+//            {
+//                mParameterToCalculate = (Parameter) data.getSerializableExtra("PARAMETER_TO_CALCULATE");
+//                markParameterToCalculate();
+//                update();
+//            }
+//        }
     }
 
     private void readInputField()
@@ -419,7 +422,7 @@ public class CalcForceFragment extends Fragment {
         mLength.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getLength()));
         mSag.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getSag()));
         mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getWeightOfSlackliner()));
-        mForce.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getmAnchorForce()/1e3 ));
+        mForce.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getmAnchorForce() / 1e3));
         mPretension.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getPretension() / 1e3));
         mSagWithoutSlacker.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getSagWithoutSlacker()));
     }
@@ -454,9 +457,40 @@ public class CalcForceFragment extends Fragment {
 
     private void selectParameterToCalculate()
     {
-        Intent intent = new Intent(getActivity(), ChooseResultParameterActivity.class);
-        startActivityForResult(intent, GET_PARAMETER_TO_CALCULATE_REQUEST);
+        //Intent intent = new Intent(getActivity(), ChooseResultParameterActivity.class);
+        //startActivityForResult(intent, GET_PARAMETER_TO_CALCULATE_REQUEST);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        String items[] = {"Length", "Sag", "Weight", "Force"};
+
+        builder.setTitle("Choose Parameter to Calculate")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                mParameterToCalculate = Parameter.LENGTH;
+                                break;
+                            case 1:
+                                mParameterToCalculate = Parameter.SAG;
+                                break;
+                            case 2:
+                                mParameterToCalculate = Parameter.WEIGHT;
+                                break;
+                            case 3:
+                                mParameterToCalculate = Parameter.FORCE;
+                                break;
+                        }
+                        markParameterToCalculate();
+                        update();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
+
 
     private void restoreParameters()
     {
@@ -480,7 +514,7 @@ public class CalcForceFragment extends Fragment {
         mSlackineCalculations.setSag(sag);
         mSlackineCalculations.setWeightOfSlackliner(weight);
 
-        mSlackineCalculations.calculateAnchorForce();
+        mSlackineCalculations.calculatePretension();
     }
 
     private void saveParameters()
@@ -504,5 +538,4 @@ public class CalcForceFragment extends Fragment {
         editor.commit();
 
     }
-
 }

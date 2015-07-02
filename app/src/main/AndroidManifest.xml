@@ -25,10 +25,6 @@
             android:name=".SelectWebbingActivity"
             android:label="@string/title_activity_select_webbing" >
         </activity>
-        <activity
-            android:name=".ChooseResultParameterActivity"
-            android:label="@string/title_activity_choose_result_parameter" >
-        </activity>
     </application>
 
 </manifest>
