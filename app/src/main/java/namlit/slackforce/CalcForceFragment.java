@@ -250,6 +250,7 @@ public class CalcForceFragment extends Fragment {
             }
         });
 
+        setInfoClickListeners(view);
 
         return view;
     }
@@ -536,6 +537,75 @@ public class CalcForceFragment extends Fragment {
         editor.putFloat(getString(R.string.preference_weight_of_slackliner), (float) weight);
 
         editor.commit();
+
+    }
+
+    private void setInfoClickListeners(View view)
+    {
+        TextView webbingText = (TextView) view.findViewById(R.id.webbingText);
+        TextView stretchText = (TextView) view.findViewById(R.id.stretchText);
+        TextView lengthText = (TextView) view.findViewById(R.id.lengthText);
+        TextView sagText = (TextView) view.findViewById(R.id.sagText);
+        TextView weightText = (TextView) view.findViewById(R.id.weightText);
+        TextView forceText = (TextView) view.findViewById(R.id.forceText);
+        TextView pretensionText = (TextView) view.findViewById(R.id.pretensionText);
+        TextView initialSagText = (TextView) view.findViewById(R.id.sagWithoutSlackerText);
+
+        webbingText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.calculate_force__info_title_webbing), getString(R.string.calculate_force__info_text_webbing), getActivity());
+            }
+        });
+
+        stretchText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.calculate_force__info_title_stretch), getString(R.string.calculate_force__info_text_stretch), getActivity());
+            }
+        });
+
+        lengthText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.calculate_force__info_title_length), getString(R.string.calculate_force__info_text_length), getActivity());
+            }
+        });
+
+        sagText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.calculate_force__info_title_sag), getString(R.string.calculate_force__info_text_sag), getActivity());
+            }
+        });
+
+        weightText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.calculate_force__info_title_weight), getString(R.string.calculate_force__info_text_weight), getActivity());
+            }
+        });
+
+        forceText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.calculate_force__info_title_force), getString(R.string.calculate_force__info_text_force), getActivity());
+            }
+        });
+
+        pretensionText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.calculate_force__info_title_pretension), getString(R.string.calculate_force__info_text_pretension), getActivity());
+            }
+        });
+
+        initialSagText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.calculate_force__info_title_initial_sag), getString(R.string.calculate_force__info_text_initial_sag), getActivity());
+            }
+        });
 
     }
 }

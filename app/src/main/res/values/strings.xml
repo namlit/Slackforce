@@ -5,17 +5,11 @@
     <string name="title_section2">static\nCalculations</string>
     <string name="title_section3">dynamic\nCalculations</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="main_activity__option_info">Info</string>
 
-    <string name="action_settings">Settings</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_select_webbing_manufactorer_action">
-        SelectWebbingManufactorerAction
-    </string>
-    <string name="title_activity_select_webbing">SelectWebbingActivity</string>
-    <string name="title_activity_choose_result_parameter">ChooseResultParameterActivity</string>
+    <string name="title_activity_select_webbing_manufacturer_action">Select Manufacturer</string>
+    <string name="title_activity_select_webbing">Select Webbing</string>
+    <string name="title_activity_choose_result_parameter">Choose Parameter to calculate</string>
 
 
     <string name="measure_force_automatically__status_text_start_measurement">Press the start button to start the automatic measurement. Then hold the microphone of your phone next to the line and slap the line with your finger. Wait until the measurement is finished.</string>
@@ -36,6 +30,68 @@
     <string name="preference_pretension">PREFERENCE_PRETENSION</string>
     <string name="preference_sag_without_slackliner">PREFERENCE_WEBBING_NAMESAG_WITHOUT_SLACKLINER</string>
     <string name="preference_height_of_fall">PREFERENCE_HEIGHT_OF_FALL</string>
+
+
+    <string name="measure_force__general_info_title">Measure Force</string>
+    <string name="measure_force__general_info_text">If you slap the Line an acoustic wave is propagating along the line and reflected multiple times. The propagation speed is dependent on the force of the line. Therefore it is possible to calculate the pretension of the line from the frequency of the sound with the following formula: <h1>4*m*l^2</h1> / t^2 \n\nm is the 	mass per unit length, l is the length of the line and t the time between the sounds. For more information on the parameters click on the name of the parameter</string>
+
+    <string name="measure_force__info_title_webbing">Webbing</string>
+    <string name="measure_force__info_text_webbing">If you specify a specific Webbing the stretch and weight of the Line get filled automatically. If you can not find your Webbing, you can just enter those values manually.</string>
+    <string name="measure_force__info_title_stretch">Stretch of the Line</string>
+    <string name="measure_force__info_text_stretch">The stretch of the Line is assumed to be linear. For the pretension measurement the stretch is only used to calculate the decrease of the weight of the webbing per meter due to the stretch of the Line. This should only be relevant on Lines with a very hight stretch.</string>
+    <string name="measure_force__info_title_line_weight">Weight of the Line</string>
+    <string name="measure_force__info_text_line_weigth">The propagation speed of a wave on a tensioned Line is dependent on the Weight of the Line. Therefore it is important put the right value here </string>
+    <string name="measure_force__info_title_length">Length of the Line</string>
+    <string name="measure_force__info_text_length">The Length of the Line between the two line lockers.</string>
+
+
+    <string name="calculate_force__general_info_title"></string>
+    <string name="calculate_force__general_info_text"></string>
+
+    <string name="calculate_force__info_title_webbing"></string>
+    <string name="calculate_force__info_text_webbing"></string>
+    <string name="calculate_force__info_title_stretch"></string>
+    <string name="calculate_force__info_text_stretch"></string>
+    <string name="calculate_force__info_title_length"></string>
+    <string name="calculate_force__info_text_length"></string>
+    <string name="calculate_force__info_title_sag"></string>
+    <string name="calculate_force__info_text_sag"></string>
+    <string name="calculate_force__info_title_weight"></string>
+    <string name="calculate_force__info_text_weight"></string>
+    <string name="calculate_force__info_title_force"></string>
+    <string name="calculate_force__info_text_force"></string>
+    <string name="calculate_force__info_title_pretension"></string>
+    <string name="calculate_force__info_text_pretension"></string>
+    <string name="calculate_force__info_title_initial_sag">Sag without Slackliner</string>
+    <string name="calculate_force__info_text_initial_sag">On Rodeolines the pretension is 0. Therefore the sag of a line without a slackliner (or zero stretch) is used to characterise the line.  On Lines with a pretension > 0 this parameter is always 0.</string>
+
+
+    <string name="dynamic_force__general_info_title"></string>
+    <string name="dynamic_force__general_info_text"></string>
+
+    <string name="dynamic_force__info_title_webbing"></string>
+    <string name="dynamic_force__info_text_webbing"></string>
+    <string name="dynamic_force__info_title_stretch"></string>
+    <string name="dynamic_force__info_text_stretch"></string>
+    <string name="dynamic_force__info_title_length"></string>
+    <string name="dynamic_force__info_text_length"></string>
+    <string name="dynamic_force__info_title_pretension"></string>
+    <string name="dynamic_force__info_text_pretension"></string>
+    <string name="dynamic_force__info_title_initial_sag">Sag without Slackliner</string>
+    <string name="dynamic_force__info_text_initial_sag">On Rodeolines the pretension is 0. Therefore the sag of a line without a slackliner (or zero stretch) is used to characterise the line.  On Lines with a pretension > 0 this parameter is always 0.</string>
+    <string name="dynamic_force__info_title_weight"></string>
+    <string name="dynamic_force__info_text_weight"></string>
+    <string name="dynamic_force__info_title_fall_height"></string>
+    <string name="dynamic_force__info_text_fall_height"></string>
+    <string name="dynamic_force__info_title_g_factor"></string>
+    <string name="dynamic_force__info_text_g_factor"></string>
+    <string name="dynamic_force__info_title_slacker_force"></string>
+    <string name="dynamic_force__info_text_slacker_force"></string>
+    <string name="dynamic_force__info_title_max_line_force"></string>
+    <string name="dynamic_force__info_text_max_line_force"></string>
+    <string name="dynamic_force__info_title_max_sag"></string>
+    <string name="dynamic_force__info_text_max_sag"></string>
+
 
 
 </resources>

@@ -222,7 +222,8 @@ public class SlacklineCalculations
 
 	public double calculateWeight()
 	{
-		return calculateVerticalForce() / GRAVITY_ACCELERATION;
+		mWeightOfSlackliner = calculateVerticalForce() / GRAVITY_ACCELERATION;
+		return mWeightOfSlackliner;
 	}
 
 	public double calculateVerticalForce()

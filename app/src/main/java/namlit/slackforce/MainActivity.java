@@ -105,8 +105,20 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_info) {
+            switch (mViewPager.getCurrentItem())
+            {
+                case MEASURE_FORCE_POSITION:
+                    ParameterInfoDialog.showDialog(getString(R.string.measure_force__general_info_title), getString(R.string.measure_force__general_info_text), this);
+                    break;
+                case CALCULATE_FORCE_POSITION:
+                    ParameterInfoDialog.showDialog(getString(R.string.calculate_force__general_info_title), getString(R.string.calculate_force__general_info_text), this);
+                    break;
+                case DYNAMIC_FORCE_POSITION:
+                    ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__general_info_title), getString(R.string.dynamic_force__general_info_text), this);
+                    break;
+            }
+
         }
 
         return super.onOptionsItemSelected(item);

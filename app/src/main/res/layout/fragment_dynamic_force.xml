@@ -22,7 +22,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Webbing:"
-                    android:id="@+id/textView4" />
+                    android:id="@+id/webbingText" />
 
                 <Button
                     android:layout_width="wrap_content"
@@ -57,7 +57,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Length [m]:"
-                    android:id="@+id/lenghtText"
+                    android:id="@+id/lengthText"
                     android:layout_column="0" />
 
                 <EditText

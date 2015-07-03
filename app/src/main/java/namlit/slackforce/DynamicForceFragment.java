@@ -206,6 +206,8 @@ public class DynamicForceFragment extends Fragment {
             }
         });
 
+        setInfoClickListeners(view);
+
         return view;
     }
 
@@ -287,7 +289,7 @@ public class DynamicForceFragment extends Fragment {
     {
         double maxForces[] = mBounceSimulations.calculateMaximumForces(mHeightOfFallValue);
         mGFactor.setText(String.format(Locale.ENGLISH, "%.2f", maxForces[0]));
-        mSlackerForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[1]/1e3));
+        mSlackerForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[1] / 1e3));
         mMaxLineForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[2] / 1e3));
         mMaxSag.setText(String.format(Locale.ENGLISH, "%.2f m", maxForces[3]));
     }
@@ -386,6 +388,101 @@ public class DynamicForceFragment extends Fragment {
         editor.putFloat(getString(R.string.preference_height_of_fall), (float) heightOfFall);
 
         editor.commit();
+
+    }
+
+    private void setInfoClickListeners(View view)
+    {
+        TextView webbingText = (TextView) view.findViewById(R.id.webbingText);
+        TextView stretchText = (TextView) view.findViewById(R.id.stretchText);
+        TextView lengthText = (TextView) view.findViewById(R.id.lengthText);
+        TextView pretensionText = (TextView) view.findViewById(R.id.pretensionText);
+        TextView initialSagText = (TextView) view.findViewById(R.id.initialSagText);
+        TextView weightText = (TextView) view.findViewById(R.id.weightText);
+        TextView fallHeightText = (TextView) view.findViewById(R.id.heightOfFallText);
+        TextView gFactorText = (TextView) view.findViewById(R.id.gFactorText);
+        TextView maxSlackerForce = (TextView) view.findViewById(R.id.maxSlackerForceText);
+        TextView maxLineForceText = (TextView) view.findViewById(R.id.maxLineForceText);
+        TextView maxSag = (TextView) view.findViewById(R.id.maxSagText);
+
+
+
+        webbingText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_webbing), getString(R.string.dynamic_force__info_text_webbing), getActivity());
+            }
+        });
+
+        stretchText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_stretch), getString(R.string.dynamic_force__info_text_stretch), getActivity());
+            }
+        });
+
+        lengthText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_length), getString(R.string.dynamic_force__info_text_length), getActivity());
+            }
+        });
+
+        pretensionText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_pretension), getString(R.string.dynamic_force__info_text_pretension), getActivity());
+            }
+        });
+
+        initialSagText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_initial_sag), getString(R.string.dynamic_force__info_text_initial_sag), getActivity());
+            }
+        });
+
+        weightText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_weight), getString(R.string.dynamic_force__info_text_weight), getActivity());
+            }
+        });
+
+        fallHeightText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_fall_height), getString(R.string.dynamic_force__info_text_fall_height), getActivity());
+            }
+        });
+
+        gFactorText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_g_factor), getString(R.string.dynamic_force__info_text_g_factor), getActivity());
+            }
+        });
+
+        maxSlackerForce.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_slacker_force), getString(R.string.dynamic_force__info_text_slacker_force), getActivity());
+            }
+        });
+
+        maxLineForceText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_max_line_force), getString(R.string.dynamic_force__info_text_max_line_force), getActivity());
+            }
+        });
+
+        maxSag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.dynamic_force__info_title_max_sag), getString(R.string.dynamic_force__info_text_max_sag), getActivity());
+            }
+        });
 
     }
 

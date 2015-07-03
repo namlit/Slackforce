@@ -186,6 +186,7 @@ public class MeasureForceFragment extends Fragment {
             }
         });
 
+        setInfoClickListeners(view);
 
         return view;
     }
@@ -362,6 +363,42 @@ public class MeasureForceFragment extends Fragment {
 
         editor.commit();
 
+    }
+
+    private void setInfoClickListeners(View view)
+    {
+        TextView webbingText = (TextView) view.findViewById(R.id.webbingText);
+        TextView stretchText = (TextView) view.findViewById(R.id.stretchText);
+        TextView lineWeightText = (TextView) view.findViewById(R.id.lineWeightText);
+        TextView lengthText = (TextView) view.findViewById(R.id.lengthText);
+
+        webbingText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.measure_force__info_title_webbing), getString(R.string.measure_force__info_text_webbing), getActivity());
+            }
+        });
+
+        stretchText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.measure_force__info_title_stretch), getString(R.string.measure_force__info_text_stretch), getActivity());
+            }
+        });
+
+        lineWeightText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.measure_force__info_title_line_weight), getString(R.string.measure_force__info_text_line_weigth), getActivity());
+            }
+        });
+
+        lengthText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParameterInfoDialog.showDialog(getString(R.string.measure_force__info_title_length), getString(R.string.measure_force__info_text_length), getActivity());
+            }
+        });
     }
 
 }

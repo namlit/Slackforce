@@ -19,7 +19,7 @@
         </activity>
         <activity
             android:name=".SelectWebbingManufacturerActivity"
-            android:label="@string/title_activity_select_webbing_manufactorer_action" >
+            android:label="@string/title_activity_select_webbing_manufacturer_action" >
         </activity>
         <activity
             android:name=".SelectWebbingActivity"
