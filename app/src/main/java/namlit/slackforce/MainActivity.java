@@ -2,7 +2,11 @@ package namlit.slackforce;
 
 import java.util.Locale;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -13,11 +17,14 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.TextView;
 
 import slacklib.*;
 
@@ -86,6 +93,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+
+        showInitialWarningIfNecessary();
 
     }
 
@@ -267,6 +276,37 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
+        }
+    }
+
+    private void showInitialWarningIfNecessary()
+    {
+        final SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.general_preference_key), Context.MODE_PRIVATE);
+        //SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        boolean isShowInitialWarning = sharedPreferences.getBoolean(getString(R.string.preference_is_show_initial_warning), true);
+        if (isShowInitialWarning)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            View view = getLayoutInflater().inflate(R.layout.layout_initial_warning, null);
+            final CheckBox doNotShowAgain = (CheckBox) view.findViewById(R.id.doNotShowAgainCheckbox);
+
+            builder.setView(view);
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (doNotShowAgain.isChecked())
+                    {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(getString(R.string.preference_is_show_initial_warning), false);
+                        editor.commit();
+                    }
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     }
 

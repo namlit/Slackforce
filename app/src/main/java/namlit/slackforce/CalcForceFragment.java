@@ -2,13 +2,11 @@ package namlit.slackforce;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -360,7 +358,7 @@ public class CalcForceFragment extends Fragment {
 
                 case FORCE:
                     double force = Double.valueOf(mForce.getText().toString());
-                    mSlackineCalculations.setmAnchorForce(force * 1e3);
+                    mSlackineCalculations.setAnchorForce(force * 1e3);
                     break;
 
                 case PRETENSION:
@@ -423,35 +421,35 @@ public class CalcForceFragment extends Fragment {
         mLength.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getLength()));
         mSag.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getSag()));
         mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getWeightOfSlackliner()));
-        mForce.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getmAnchorForce() / 1e3));
+        mForce.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getAnchorForce() / 1e3));
         mPretension.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getPretension() / 1e3));
         mSagWithoutSlacker.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getSagWithoutSlacker()));
     }
 
     private void markParameterToCalculate()
     {
-        mLength.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
-        mSag.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
-        mWeight.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
-        mForce.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
-        mPretension.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
-        mSagWithoutSlacker.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_ATOP);
+        mLength.setTextColor(Color.BLACK);
+        mSag.setTextColor(Color.BLACK);
+        mWeight.setTextColor(Color.BLACK);
+        mForce.setTextColor(Color.BLACK);
+        mPretension.setTextColor(Color.BLACK);
+        mSagWithoutSlacker.setTextColor(Color.BLACK);
 
         switch (mParameterToCalculate)
         {
             case FORCE:
-                mForce.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_ATOP);
-                mPretension.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_ATOP);
-                mSagWithoutSlacker.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_ATOP);
+                mForce.setTextColor(Color.BLUE);
+                mPretension.setTextColor(Color.BLUE);
+                mSagWithoutSlacker.setTextColor(Color.BLUE);
                 break;
             case LENGTH:
-                mLength.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_ATOP);
+                mLength.setTextColor(Color.BLUE);
                 break;
             case SAG:
-                mSag.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_ATOP);
+                mSag.setTextColor(Color.BLUE);
                 break;
             case WEIGHT:
-                mWeight.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_ATOP);
+                mWeight.setTextColor(Color.BLUE);
                 break;
         }
     }
@@ -503,7 +501,7 @@ public class CalcForceFragment extends Fragment {
         double length = sharedPreferences.getFloat(getString(R.string.preference_line_length), 50);
         double sag = sharedPreferences.getFloat(getString(R.string.preference_line_sag), 2);
         double weight = sharedPreferences.getFloat(getString(R.string.preference_weight_of_slackliner), 80);
-
+        mParameterToCalculate = Parameter.valueOf(sharedPreferences.getString(getString(R.string.preference_parameter_to_calculate), Parameter.FORCE.toString()));
 
         Webbing webbing = Webbing.getWebbingByName(webbingName);
         if (webbing != null)
@@ -535,6 +533,7 @@ public class CalcForceFragment extends Fragment {
         editor.putFloat(getString(R.string.preference_line_length), (float) length);
         editor.putFloat(getString(R.string.preference_line_sag), (float) sag);
         editor.putFloat(getString(R.string.preference_weight_of_slackliner), (float) weight);
+        editor.putString(getString(R.string.preference_parameter_to_calculate), mParameterToCalculate.toString());
 
         editor.commit();
 

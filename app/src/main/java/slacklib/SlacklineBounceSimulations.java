@@ -5,93 +5,96 @@ import java.io.*;
 public class SlacklineBounceSimulations {
 	private final double gravityAcceleration = 9.81;
 
-	private SlacklineCalculations slackCalc;
-	private double speedOfSlackliner; // direction downwards
-	private double verticalPositionOfSlackliner; // corresponds to -sag of slackline for positive values
-	private double deltaT = 0.0001;
+	private SlacklineCalculations mSlackCalc;
+	private double mSpeedOfSlackliner; // direction downwards
+	private double mVerticalPositionOfSlackliner; // corresponds to -sag of slackline for positive values
+	private double mDeltaT = 0.0001;
 	/*
-	 * deltaT:
+	 * mDeltaT:
 	 * Test: 30s simalation, length=50m, sag=2m, weight=80kg, heightOfFall=1m, Webbing=sonic2.0
-	 * deltaT = 0.01: 1.67m deviation in max height at 27.04s (9 jumps)
-	 * deltaT = 0.001: 0.144m deviation in max height at 28,7s
-	 * deltaT = 0.0001: 0.014m deviation in max height at 28,58s
-	 * deltaT = 0.00005: 0.007m deviation in max height at 28.57s (10 jumps)
+	 * mDeltaT = 0.01: 1.67m deviation in max height at 27.04s (9 jumps)
+	 * mDeltaT = 0.001: 0.144m deviation in max height at 28,7s
+	 * mDeltaT = 0.0001: 0.014m deviation in max height at 28,58s
+	 * mDeltaT = 0.00005: 0.007m deviation in max height at 28.57s (10 jumps)
 	 */
 
 	public SlacklineBounceSimulations() {
-		slackCalc = new SlacklineCalculations();
-		//deltaT = 0.001;
+		mSlackCalc = new SlacklineCalculations();
+		//mDeltaT = 0.001;
 	}
 
 	public SlacklineBounceSimulations(SlacklineCalculations slackCalc) {
-		this.slackCalc = slackCalc;
-		//deltaT = 0.001;
+		this.mSlackCalc = slackCalc;
+		//mDeltaT = 0.001;
 	}
 
 	private double getKineticEnergy() {
-		return 0.5 * slackCalc.getWeightOfSlackliner() * speedOfSlackliner * speedOfSlackliner;
+		return 0.5 * mSlackCalc.getWeightOfSlackliner() * mSpeedOfSlackliner * mSpeedOfSlackliner;
 	}
 
 	private void setSpeedFromEkin(double Ekin) {
-		speedOfSlackliner = Math.sqrt((2 * Ekin) / slackCalc.getWeightOfSlackliner());
+		mSpeedOfSlackliner = Math.sqrt((2 * Ekin) / mSlackCalc.getWeightOfSlackliner());
 	}
 
 	private void iterationStep() {
-		//double Ekin = 0.5 * slackCalc.getWeightOfSlackliner() * speedOfSlackliner * speedOfSlackliner;
-		double m = slackCalc.getWeightOfSlackliner();
-		slackCalc.setSag(-verticalPositionOfSlackliner);
-		double F = m * gravityAcceleration - slackCalc.calculateVerticalForce(); // orientation downwards
+		//double Ekin = 0.5 * mSlackCalc.getWeightOfSlackliner() * mSpeedOfSlackliner * mSpeedOfSlackliner;
+		double m = mSlackCalc.getWeightOfSlackliner();
+		mSlackCalc.setSag(-mVerticalPositionOfSlackliner);
+		double F = m * gravityAcceleration - mSlackCalc.calculateVerticalForce(); // orientation downwards
 
 		double a = F / m; // orientation downwards
-		double deltaV = a * deltaT; // orientation downwards
-		double deltaS = 0.5 * a * deltaT * deltaT + speedOfSlackliner * deltaT; // orientation downwards
+		double deltaV = a * mDeltaT; // orientation downwards
+		double deltaS = 0.5 * a * mDeltaT * mDeltaT + mSpeedOfSlackliner * mDeltaT; // orientation downwards
 
-		verticalPositionOfSlackliner -= deltaS;
-		speedOfSlackliner += deltaV;
+		mVerticalPositionOfSlackliner -= deltaS;
+		mSpeedOfSlackliner += deltaV;
 
 	}
 
-	public double[] calculateMaximumForces(double heightOfFall) {
+	public double[] calculateMaximumForces(double heightOfBounce) {
+		double heightOfFall = calculateHeightOfFall(heightOfBounce);
 		if (heightOfFall < 0) {
-			verticalPositionOfSlackliner = heightOfFall;
-			speedOfSlackliner = 0;
+			mVerticalPositionOfSlackliner = heightOfFall;
+			mSpeedOfSlackliner = 0;
 		} else {
-			verticalPositionOfSlackliner = 0;
-			double Ekin = slackCalc.getWeightOfSlackliner() * gravityAcceleration * heightOfFall; // Ekin = Epot
+			mVerticalPositionOfSlackliner = 0;
+			double Ekin = mSlackCalc.getWeightOfSlackliner() * gravityAcceleration * heightOfFall; // Ekin = Epot
 			setSpeedFromEkin(Ekin);
 		}
 
 		do {
 			iterationStep();
-		} while (speedOfSlackliner > 0);
+		} while (mSpeedOfSlackliner > 0);
 
 		double forces[] = new double[4];
-		double vForce = slackCalc.getVerticalForce();
-		forces[0] = vForce / (slackCalc.getWeightOfSlackliner() * slackCalc.GRAVITY_ACCELERATION);
+		double vForce = mSlackCalc.getVerticalForce();
+		forces[0] = vForce / (mSlackCalc.getWeightOfSlackliner() * mSlackCalc.GRAVITY_ACCELERATION);
 		forces[1] = vForce;
-		forces[2] = slackCalc.getmAnchorForce();
-		forces[3] = -verticalPositionOfSlackliner;
+		forces[2] = mSlackCalc.getAnchorForce();
+		forces[3] = -mVerticalPositionOfSlackliner;
 		return forces;
 	}
 
-	public void simulateJumping(double jumpHeight, double simulationTime) {
-		double time[] = new double[(int) (simulationTime / deltaT) + 1];
-		double verticalPos[] = new double[(int) (simulationTime / deltaT) + 1];
-		double anchorForce[] = new double[(int) (simulationTime / deltaT) + 1];
-		double verticalForce[] = new double[(int) (simulationTime / deltaT) + 1];
+	public void simulateBouncing(double heightOfBounce, double simulationTime) {
+		double heightOfFall = calculateHeightOfFall(heightOfBounce);
 
-		verticalPositionOfSlackliner = jumpHeight;
-		speedOfSlackliner = 0;
+		double time[] = new double[(int) (simulationTime / mDeltaT) + 1];
+		double verticalPos[] = new double[(int) (simulationTime / mDeltaT) + 1];
+		double anchorForce[] = new double[(int) (simulationTime / mDeltaT) + 1];
+		double verticalForce[] = new double[(int) (simulationTime / mDeltaT) + 1];
+
+		mVerticalPositionOfSlackliner = heightOfFall;
+		mSpeedOfSlackliner = 0;
 
 		int i = 0;
-		for (double currentTime = 0; currentTime < simulationTime; currentTime += deltaT, i++) {
+		for (double currentTime = 0; currentTime < simulationTime; currentTime += mDeltaT, i++) {
 			iterationStep();
 			time[i] = currentTime;
-			verticalPos[i] = verticalPositionOfSlackliner;
-			anchorForce[i] = slackCalc.getmAnchorForce(); //calculateAnchorForce?
-			verticalForce[i] = slackCalc.getVerticalForce();
+			verticalPos[i] = mVerticalPositionOfSlackliner;
+			anchorForce[i] = mSlackCalc.getAnchorForce(); //calculateAnchorForce?
+			verticalForce[i] = mSlackCalc.getVerticalForce();
 
-			//out.printf("Time, Pos, Fv, Fh:\t%.3f\t%.3f\t%.0f\t%.0f\n", currentTime, verticalPositionOfSlackliner, slackCalc.getVerticalForce(), slackCalc.getmAnchorForce());
+			//out.printf("Time, Pos, Fv, Fh:\t%.3f\t%.3f\t%.0f\t%.0f\n", currentTime, mVerticalPositionOfSlackliner, mSlackCalc.getVerticalForce(), mSlackCalc.getAnchorForce());
 		}
 		writeSimulationResultToCSVFile(time, verticalPos, anchorForce, verticalForce, "simulation.csv");
 	}
@@ -123,88 +126,95 @@ public class SlacklineBounceSimulations {
 
 
 	public void setSlackCalc(SlacklineCalculations slackCalc) {
-		this.slackCalc = slackCalc;
+		this.mSlackCalc = slackCalc;
 	}
 
 	public double getSpeedOfSlackliner() {
-		return speedOfSlackliner;
+		return mSpeedOfSlackliner;
 	}
 
 	public void setSpeedOfSlackliner(double speedOfSlackliner) {
-		this.speedOfSlackliner = speedOfSlackliner;
+		this.mSpeedOfSlackliner = speedOfSlackliner;
 	}
 
 	public double getVerticalPositionOfSlackliner() {
-		return verticalPositionOfSlackliner;
+		return mVerticalPositionOfSlackliner;
 	}
 
 	public void setVerticalPositionOfSlackliner(double verticalPositionOfSlackliner) {
-		this.verticalPositionOfSlackliner = verticalPositionOfSlackliner;
+		this.mVerticalPositionOfSlackliner = verticalPositionOfSlackliner;
 	}
 
 	public double getDeltaT() {
-		return deltaT;
+		return mDeltaT;
 	}
 
 	public void setDeltaT(double deltaT) {
-		this.deltaT = deltaT;
+		this.mDeltaT = deltaT;
 	}
 
 	public double getStretchCoefficient()
 	{
-		return slackCalc.getStretchCoefficient();
+		return mSlackCalc.getStretchCoefficient();
 	}
 
 	public String getWebbingName()
 	{
-		return slackCalc.getWebbingName();
+		return mSlackCalc.getWebbingName();
 	}
 
 	public double getLength()
 	{
-		return slackCalc.getLength();
+		return mSlackCalc.getLength();
 	}
 
 	public double getPretension()
 	{
-		return slackCalc.getPretension();
+		return mSlackCalc.getPretension();
 	}
 
 	public double getInitialSag()
 	{
-		return slackCalc.getSagWithoutSlacker();
+		return mSlackCalc.getSagWithoutSlacker();
 	}
 
 	public double getWeight()
 	{
-		return slackCalc.getWeightOfSlackliner();
+		return mSlackCalc.getWeightOfSlackliner();
 	}
 
 	public void setLength(double length) {
-		slackCalc.setLength(length);
+		mSlackCalc.setLength(length);
 	}
 
 	public void setPretension(double pretension) {
-		slackCalc.setPretension(pretension);
+		mSlackCalc.setPretension(pretension);
 	}
 
 	public void setInitialSag(double initialSag) {
-		slackCalc.setSagWithoutSlacker(initialSag);
+		mSlackCalc.setSagWithoutSlacker(initialSag);
 	}
 
 	public void setWeight(double weight)
 	{
-		slackCalc.setWeightOfSlackliner(weight);
+		mSlackCalc.setWeightOfSlackliner(weight);
 	}
 
 	public void setWebbing(Webbing webbing)
 	{
-		slackCalc.setWebbing(webbing);
+		mSlackCalc.setWebbing(webbing);
 	}
 
 //	private SlacklineCalculations getSlackCalc()
 //	{
-//		return slackCalc;
+//		return mSlackCalc;
 //	}
+
+	private double calculateHeightOfFall(double heightOfBounce)
+	{
+		mSlackCalc.updateVerticalForceFromWeight();
+		double sag = mSlackCalc.calculateSag();
+		return heightOfBounce - sag;
+	}
 	
 }

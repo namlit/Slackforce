@@ -91,7 +91,7 @@ public class SlacklineCalculations
 	 * The mAnchorForce does not get calculated from the current mSag, mLength and
 	 * mVerticalForce Values. To do this use the method caculateAnchorForce().
 	 */
-	public double getmAnchorForce()
+	public double getAnchorForce()
 	{
 		return mAnchorForce;
 	}
@@ -160,12 +160,18 @@ public class SlacklineCalculations
 	{
 		this.mVerticalForce = force;
 	}
+
+	public void updateVerticalForceFromWeight()
+	{
+		setWeightOfSlackliner(mWeightOfSlackliner);
+	}
+
 	/**
 	 * setting the AnchorForce causes the mPretension to get calculated from the
 	 * current mSag, mLength, mVerticalForce and the force given as parameter.
 	 * @param force
 	 */
-	public void setmAnchorForce(double force)
+	public void setAnchorForce(double force)
 	{
 		if(force < 0.5* mVerticalForce)
 		{
@@ -211,7 +217,7 @@ public class SlacklineCalculations
 	{
 		mAnchorForce = (Math.sqrt(mSag * mSag + mLength * mLength / 4) * mVerticalForce) / (2 * mSag);
 		
-		//setmAnchorForce(mAnchorForce);
+		//setAnchorForce(mAnchorForce);
 		return mAnchorForce;
 	}
 	public double calculatePretension()
@@ -333,7 +339,7 @@ public class SlacklineCalculations
 
 	private double calculateLengthFromAnchorForce()
 	{
-		double anchorForce = getmAnchorForce();
+		double anchorForce = getAnchorForce();
 		mLength =  Math.sqrt((4 * mSag * (4 * anchorForce * anchorForce - mVerticalForce * mVerticalForce)) /
 				(mVerticalForce * mVerticalForce));
 		return mLength;

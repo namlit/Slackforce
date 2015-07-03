@@ -134,7 +134,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Height of Fall [m]:"
+                    android:text="Height of Bounce [m]:"
                     android:id="@+id/heightOfFallText" />
 
                 <EditText
@@ -191,7 +191,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="max Line Force:"
+                    android:text="max. Line Force:"
                     android:id="@+id/maxLineForceText"
                     android:layout_column="0" />
 
