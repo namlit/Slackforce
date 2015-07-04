@@ -79,8 +79,8 @@ public class Webbing
 
 		slacklineTools.addWebbing("AIR", 63e-3, 6.6e-6, 25, 45);
 		slacklineTools.addWebbing("CLASSIC", 52e-3, 8e-6, 25, 30);
-		slacklineTools.addWebbing("KIDS", 64e-3, 10, 25, 45);
-		slacklineTools.addWebbing("SOFT", 48e-3, 26e-3, 21, 30);
+		slacklineTools.addWebbing("KIDS", 64e-3, 10e-6, 25, 45);
+		slacklineTools.addWebbing("SOFT", 48e-3, 26e-6, 21, 30);
 		slacklineTools.addWebbing("STRONG II", 67e-3, 7.5e-6, 36, 25);
 
 		slackpro.addWebbing("NEON-Light", 0.057, 3.75*1e-6, 33, 25);
