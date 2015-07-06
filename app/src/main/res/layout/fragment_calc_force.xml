@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
                     android:ems="10"
-                    android:id="@+id/stretch" />
+                    android:id="@+id/stretch"/>
             </TableRow>
 
             <TableRow

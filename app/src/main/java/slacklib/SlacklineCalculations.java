@@ -236,7 +236,7 @@ public class SlacklineCalculations
 	{
 		if(isPretensionConstant)
 		{
-			calculateAnchorForceFromPretension();
+			calculateAnchorForceFromPretension(mLength, mSag);
 		}
 
 		mVerticalForce = calculateVerticalForceFromAnchorForce();
@@ -315,8 +315,8 @@ public class SlacklineCalculations
 	 */
 	private double calculateSagFromPretension()
 	{
-		if (mPretension <= 0 && mSagWithoutSlacker > 0)
-			return calculateSagFromSagWithoutSlacker();
+//		if (mPretension <= 0 && mSagWithoutSlacker > 0)
+//			return calculateSagFromSagWithoutSlacker();
 
 		mSag = iterativeApproximation(new SagFromPretensionIterative(), 1e-4, 1e4);
 
@@ -325,17 +325,17 @@ public class SlacklineCalculations
 		return mSag;
 	}
 
-	private double calculateSagFromSagWithoutSlacker()
-	{
-		if(mSagWithoutSlacker <= 0 && mPretension > 0)
-		{
-			return calculateSagFromPretension();
-		}
-		mSag = iterativeApproximation(new SagFromSagWithoutSlackerIterative(), 1e-6, 1e6);
-		//calculateAnchorForce();
-		return mSag;
-
-	}
+//	private double calculateSagFromSagWithoutSlacker()
+//	{
+//		if(mSagWithoutSlacker <= 0 && mPretension > 0)
+//		{
+//			return calculateSagFromPretension();
+//		}
+//		mSag = iterativeApproximation(new SagFromSagWithoutSlackerIterative(), 1e-6, 1e6);
+//		//calculateAnchorForce();
+//		return mSag;
+//
+//	}
 
 	private double calculateLengthFromAnchorForce()
 	{
@@ -347,8 +347,8 @@ public class SlacklineCalculations
 
 	private double calculateLengthFromPretension()
 	{
-		if (mPretension <= 0 && mSagWithoutSlacker > 0)
-			return calculateLengthFromSagWithoutSlackliner();
+//		if (mPretension <= 0 && mSagWithoutSlacker > 0)
+//			return calculateLengthFromSagWithoutSlackliner();
 
 		mLength = iterativeApproximation(new LengthFromPretensionIterative(), 1e-6, 1e6);
 
@@ -358,16 +358,16 @@ public class SlacklineCalculations
 		return mLength;
 	}
 
-	private double calculateLengthFromSagWithoutSlackliner()
-	{
-		if (mSagWithoutSlacker <= 0 && mPretension > 0)
-			return calculateLengthFromPretension();
-
-
-		mLength = iterativeApproximation(new LengthFromSagWithoutSlackerIterative(), 1e-4, 1e4);
-		//calculateAnchorForce();
-		return mLength;
-	}
+//	private double calculateLengthFromSagWithoutSlackliner()
+//	{
+//		if (mSagWithoutSlacker <= 0 && mPretension > 0)
+//			return calculateLengthFromPretension();
+//
+//
+//		mLength = iterativeApproximation(new LengthFromSagWithoutSlackerIterative(), 1e-4, 1e4);
+//		//calculateAnchorForce();
+//		return mLength;
+//	}
 
 
 	private double calculatePretensionFromAnchorForce()
@@ -384,13 +384,16 @@ public class SlacklineCalculations
 		}
 		else
 		{
-			mPretension = mAnchorForce - ((2 * Math.sqrt(mSag * mSag + mLength * mLength / 4) - mLength) / (mWebbing.getStretchCoefficient() * mLength));
+			double relativeChangeInLength = (2 * Math.sqrt(mSag * mSag + mLength * mLength / 4) - mLength) / mLength;
+			mPretension = mWebbing.getForce(mAnchorForce, -relativeChangeInLength);
 
 		}
 		if (mPretension <= 0)
 		{
 			mPretension = 0;
-			mSagWithoutSlacker = Math.sqrt( (Math.pow(mLength,2)/4 + mSag * mSag) / Math.pow(1 + mWebbing.getStretchCoefficient() * mAnchorForce,2) - Math.pow(mLength,2)/4);
+
+			double relativeChangeInLength = mWebbing.getStretch(mAnchorForce);
+			mSagWithoutSlacker = Math.sqrt( (mSag*mSag + mLength*mLength/4) / Math.pow(relativeChangeInLength+1,2) - mLength*mLength/4 );
 		}
 		else
 			mSagWithoutSlacker = 0;
@@ -403,11 +406,11 @@ public class SlacklineCalculations
 	 * for calculating the mLength or the mSag of the line.
 	 * @return
 	 */
-	private double calculateAnchorForceFromPretension()
+	private double calculateAnchorForceFromPretension(double length, double sag)
 	{
 
 		if(mPretension == 0 && mSagWithoutSlacker > 0)
-			return calculateAnchorForceFromSagWithoutSlackliner();
+			return calculateAnchorForceFromSagWithoutSlackliner(length, sag);
 
 		if(mWebbing == null || mWebbing.getStretchCoefficient() == 0)
 		{
@@ -415,7 +418,8 @@ public class SlacklineCalculations
 		}
 		else
 		{
-			mAnchorForce = mPretension + ((2 * Math.sqrt(mSag * mSag + mLength * mLength / 4) - mLength) / (mWebbing.getStretchCoefficient() * mLength));
+			double relativeChangeInLength = (2 * Math.sqrt(sag * sag + length * length / 4) - length) / length;
+			mAnchorForce = mWebbing.getForce(mPretension, relativeChangeInLength);
 		}
 
 		return mAnchorForce;
@@ -427,17 +431,19 @@ public class SlacklineCalculations
 	 * for calculating the mLength or the mSag of the line.
 	 * @return
 	 */
-	private double calculateAnchorForceFromSagWithoutSlackliner()
+	private double calculateAnchorForceFromSagWithoutSlackliner(double length, double sag)
 	{
 		if(mSagWithoutSlacker == 0 && mPretension > 0)
-			return calculateAnchorForceFromPretension();
+			return calculateAnchorForceFromPretension(length, sag);
 
 		if(mWebbing == null || mWebbing.getStretchCoefficient() == 0)
 		{
-			mAnchorForce = (Math.sqrt(Math.pow(mSagWithoutSlacker, 2) + Math.pow(mLength, 2) / 4) * mVerticalForce) / (2* mSagWithoutSlacker);
+			mAnchorForce = (Math.sqrt(Math.pow(mSagWithoutSlacker, 2) + Math.pow(length, 2) / 4) * mVerticalForce) / (2* mSagWithoutSlacker);
 		}
-		else
-			mAnchorForce = (Math.sqrt( (Math.pow(mLength,2)/4 + mSag * mSag) / (Math.pow(mSagWithoutSlacker, 2) + Math.pow(mLength,2)/4 )) - 1) / mWebbing.getStretchCoefficient();
+		else {
+			double relativeChangeInLength = (Math.sqrt((Math.pow(length, 2) / 4 + sag * sag) / (Math.pow(mSagWithoutSlacker, 2) + Math.pow(length, 2) / 4)) - 1);
+			mAnchorForce = mWebbing.getForce(0, relativeChangeInLength);
+		}
 
 		if(mAnchorForce < 0)
 			mAnchorForce = 0;
@@ -454,35 +460,35 @@ public class SlacklineCalculations
 		@Override
 		public double getFunctionValue(double length) {
 			double l1 = Math.sqrt(mSag * mSag + length*length/4);
-			return l1 * (mVerticalForce /(2* mSag) - 2/(mWebbing.getStretchCoefficient()*length)) - mPretension + 1/ mWebbing.getStretchCoefficient();
+			return l1 * mVerticalForce / (2*mSag) - calculateAnchorForceFromPretension(length, mSag);
 		}
 	}
 	class SagFromPretensionIterative implements itarativeApproximationFunction {
 		@Override
 		public double getFunctionValue(double sag) {
 			double l1 = Math.sqrt(sag*sag + mLength * mLength /4);
-			return l1 * (mVerticalForce /(2*sag) - 2/(mWebbing.getStretchCoefficient()* mLength)) - mPretension + 1/ mWebbing.getStretchCoefficient();
+			return l1 * mVerticalForce / (2*sag) - calculateAnchorForceFromPretension(mLength, sag);
 		}
 	}
 
-	class LengthFromSagWithoutSlackerIterative implements itarativeApproximationFunction {
-		@Override
-		public double getFunctionValue(double length) {
-			double l1 = Math.sqrt(mSagWithoutSlacker * mSagWithoutSlacker + length*length/4);
-			double l2 = Math.sqrt(mSag * mSag + length*length/4);
-			double stretch = mWebbing.getStretchCoefficient();
-			return (l2/l1 - 1) / stretch - l2 * mVerticalForce / (2* mSag);
-		}
-	}
-	class SagFromSagWithoutSlackerIterative implements itarativeApproximationFunction {
-		@Override
-		public double getFunctionValue(double sag) {
-			double l1 = Math.sqrt(mSagWithoutSlacker * mSagWithoutSlacker + mLength * mLength /4);
-			double l2 = Math.sqrt(sag*sag + mLength * mLength /4);
-			double stretch = mWebbing.getStretchCoefficient();
-			return (l2/l1 - 1) / stretch - l2 * mVerticalForce / (2*sag);
-		}
-	}
+//	class LengthFromSagWithoutSlackerIterative implements itarativeApproximationFunction {
+//		@Override
+//		public double getFunctionValue(double length) {
+//			double l1 = Math.sqrt(mSagWithoutSlacker * mSagWithoutSlacker + length*length/4);
+//			double l2 = Math.sqrt(mSag * mSag + length*length/4);
+//			double stretch = mWebbing.getStretchCoefficient();
+//			return (l2/l1 - 1) / stretch - l2 * mVerticalForce / (2* mSag);
+//		}
+//	}
+//	class SagFromSagWithoutSlackerIterative implements itarativeApproximationFunction {
+//		@Override
+//		public double getFunctionValue(double sag) {
+//			double l1 = Math.sqrt(mSagWithoutSlacker * mSagWithoutSlacker + mLength * mLength /4);
+//			double l2 = Math.sqrt(sag*sag + mLength * mLength /4);
+//			double stretch = mWebbing.getStretchCoefficient();
+//			return (l2/l1 - 1) / stretch - l2 * mVerticalForce / (2*sag);
+//		}
+//	}
 
 
 

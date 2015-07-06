@@ -59,7 +59,7 @@ public class Manufacturer
 		return mName;
 	}
 	
-	public void addWebbing(String name, double weightPerMeter, double stretchCoefficient, double breakingStrength, double width)
+	public void addWebbing(String name, double weightPerMeter, StretchBehavior stretchCoefficient, double breakingStrength, double width)
 	{
 		mWebbings.add(new Webbing(name, this, weightPerMeter, stretchCoefficient, breakingStrength, width));
 	}

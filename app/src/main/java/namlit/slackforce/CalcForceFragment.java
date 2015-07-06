@@ -115,6 +115,8 @@ public class CalcForceFragment extends Fragment {
         updateCalculations();
         markParameterToCalculate();
 
+        mStretch.clearFocus();
+
         mWebbing.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), SelectWebbingManufacturerActivity.class);
@@ -314,7 +316,7 @@ public class CalcForceFragment extends Fragment {
                 mSlackineCalculations.setWebbing(Manufacturer.getManufacturerByID(manufacturerID).getWebbingByID(webbingID));
 
                 mWebbing.setText(mSlackineCalculations.getWebbingName());
-                mStretch.setText( String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getStretchCoefficient() / 1e-6));
+                mStretch.setText( String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getStretchCoefficient() / 1e-6));
 
                 updateCalculations();
             }
@@ -336,9 +338,9 @@ public class CalcForceFragment extends Fragment {
 
             switch (mParameterChanged) {
                 case STRETCH:
-                    double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
+                    double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-2; // unit at textfield is %/10kN
                     if (mSlackineCalculations.getStretchCoefficient() != stretch)
-                        mSlackineCalculations.setWebbing(new Webbing("Custom", stretch));
+                        mSlackineCalculations.setWebbing(new Webbing("Custom", new StretchBehavior(new StretchPoint(30e3, 3*stretch))));
                     break;
 
                 case LENGTH:
@@ -417,7 +419,7 @@ public class CalcForceFragment extends Fragment {
     private void updateAllTextFields()
     {
         mWebbing.setText(mSlackineCalculations.getWebbingName());
-        mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getStretchCoefficient() / 1e-6));
+        mStretch.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getStretchCoefficient() / 1e-6));
         mLength.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getLength()));
         mSag.setText(String.format(Locale.ENGLISH, "%.2f", mSlackineCalculations.getSag()));
         mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mSlackineCalculations.getWeightOfSlackliner()));
@@ -507,7 +509,7 @@ public class CalcForceFragment extends Fragment {
         if (webbing != null)
             mSlackineCalculations.setWebbing(webbing);
         else {
-            mSlackineCalculations.setWebbing(new Webbing(webbingName, stretch));
+            mSlackineCalculations.setWebbing(new Webbing(webbingName, new StretchBehavior(new StretchPoint(30e3, 3*stretch*1e4))));
         }
         mSlackineCalculations.setLength(length);
         mSlackineCalculations.setSag(sag);

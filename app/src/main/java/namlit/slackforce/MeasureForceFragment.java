@@ -311,11 +311,11 @@ public class MeasureForceFragment extends Fragment {
 
     private void readFromTextFields()
     {
-        double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
+        double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-2; // unit at textfield is %/10kN
         double lineWeight = Double.valueOf(mLineWeight.getText().toString()) / 1e3;
         if (mSlacklineMeasurements.getStretchCoefficient() != stretch || mSlacklineMeasurements.getWeightPerMeter() != lineWeight)
         {
-            mSlacklineMeasurements.setWebbing(new Webbing("Custom", lineWeight, stretch));
+            mSlacklineMeasurements.setWebbing(new Webbing("Custom", lineWeight, new StretchBehavior(new StretchPoint(30e3, 3*stretch))));
         }
 
         double length = Double.valueOf(mLength.getText().toString());
@@ -337,7 +337,7 @@ public class MeasureForceFragment extends Fragment {
         if (webbing != null)
             mSlacklineMeasurements.setWebbing(webbing);
         else {
-            mSlacklineMeasurements.setWebbing(new Webbing(webbingName, weightPerMeter, stretch));
+            mSlacklineMeasurements.setWebbing(new Webbing(webbingName, weightPerMeter, new StretchBehavior(new StretchPoint(30e3, 3*stretch*1e4))));
         }
         mSlacklineMeasurements.setLength(length);
         mIsMeasureAutomatically = isAutomaticMeasurement;

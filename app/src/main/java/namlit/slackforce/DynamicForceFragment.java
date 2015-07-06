@@ -270,7 +270,7 @@ public class DynamicForceFragment extends Fragment {
                 mBounceSimulations.setWebbing(Manufacturer.getManufacturerByID(manufacturerID).getWebbingByID(webbingID));
 
                 mWebbing.setText(mBounceSimulations.getWebbingName());
-                mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getStretchCoefficient() / 1e-6));
+                mStretch.setText(String.format(Locale.ENGLISH, "%.2f", mBounceSimulations.getStretchCoefficient() / 1e-6));
 
                 calculateDynamicForces();
             }
@@ -309,10 +309,10 @@ public class DynamicForceFragment extends Fragment {
     {
         try
         {
-            double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
+            double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-2; // unit at textfield is %/10kN
             if (mBounceSimulations.getStretchCoefficient() != stretch)
             {
-                mBounceSimulations.setWebbing(new Webbing("Custom", stretch));
+                mBounceSimulations.setWebbing(new Webbing("Custom", new StretchBehavior(new StretchPoint(30e3, 3*stretch))));
                 mWebbing.setText(mBounceSimulations.getWebbingName());
             }
 
@@ -342,7 +342,7 @@ public class DynamicForceFragment extends Fragment {
         Context context = getActivity();
         SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.dynamic_force_preference_key), Context.MODE_PRIVATE);
 
-        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), "Custom");
+        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), "White Magic");
         double stretch = sharedPreferences.getFloat(getString(R.string.preference_stretch_coefficient), (float) 1e-5);
         double length = sharedPreferences.getFloat(getString(R.string.preference_line_length), 50);
         double pretension = sharedPreferences.getFloat(getString(R.string.preference_pretension), 6000);
@@ -355,7 +355,7 @@ public class DynamicForceFragment extends Fragment {
         if (webbing != null)
             mBounceSimulations.setWebbing(webbing);
         else {
-            mBounceSimulations.setWebbing(new Webbing(webbingName, stretch));
+            mBounceSimulations.setWebbing(new Webbing("Custom", new StretchBehavior(new StretchPoint(30e3, 3*stretch*1e4))));
         }
         mBounceSimulations.setLength(length);
         mBounceSimulations.setPretension(pretension);
