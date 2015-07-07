@@ -3,4 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
     <item android:id="@+id/action_info" android:title="@string/main_activity__option_info"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_about" android:title="@string/main_activity__option_about"
+        android:orderInCategory="100" app:showAsAction="never" />
 </menu>

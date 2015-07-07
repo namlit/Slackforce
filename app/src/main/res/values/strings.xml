@@ -6,6 +6,11 @@
     <string name="title_section3">dynamic\nCalculations</string>
 
     <string name="main_activity__option_info">Info</string>
+    <string name="main_activity__option_about">About</string>
+
+    <string name="option_about__source_code_at">Source Code and Support at:</string>
+    <string name="option_about__github_address">https://github.com/namlit/Slackforce</string>
+    <string name="option_about__post_on_github">Please post bug reports and feature requests at the github page.</string>
 
     <string name="title_activity_select_webbing_manufacturer_action">Select Manufacturer</string>
     <string name="title_activity_select_webbing">Select Webbing</string>

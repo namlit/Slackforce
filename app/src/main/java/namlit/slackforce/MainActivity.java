@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -128,6 +130,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     break;
             }
 
+        }
+        if (id == R.id.action_about)
+        {
+            showAboutDialog();
         }
 
         return super.onOptionsItemSelected(item);
@@ -307,6 +313,38 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
             AlertDialog dialog = builder.create();
             dialog.show();
+        }
+    }
+
+    private void showAboutDialog()
+    {
+
+        try
+        {
+
+            PackageManager manager = getPackageManager();
+            PackageInfo info = manager.getPackageInfo(getPackageName(), 0);
+            String appVersion = info.versionName;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            View view = getLayoutInflater().inflate(R.layout.layout_about_page, null);
+            TextView appNameVersion = (TextView) view.findViewById(R.id.appNameVersion);
+            appNameVersion.setText(getString(R.string.app_name) + " " + appVersion);
+
+            builder.setView(view);
+            builder.setNeutralButton(getString(R.string.back), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+        } catch (Throwable t) {
+
+            t.printStackTrace();
         }
     }
 

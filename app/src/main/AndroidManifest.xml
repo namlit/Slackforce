@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="namlit.slackforce"
-    android:versionCode="1"
-    android:versionName="v0.1">
+    package="namlit.slackforce">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
