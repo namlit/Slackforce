@@ -311,11 +311,12 @@ public class MeasureForceFragment extends Fragment {
 
     private void readFromTextFields()
     {
-        double stretch = Double.valueOf(mStretch.getText().toString()) * 1e-2; // unit at textfield is %/10kN
+        double stretchCoeff = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
         double lineWeight = Double.valueOf(mLineWeight.getText().toString()) / 1e3;
-        if (mSlacklineMeasurements.getStretchCoefficient() != stretch || mSlacklineMeasurements.getWeightPerMeter() != lineWeight)
+        if (Math.abs(mSlacklineMeasurements.getStretchCoefficient() - stretchCoeff) > 5e-9 ||
+                Math.abs(mSlacklineMeasurements.getWeightPerMeter() - lineWeight) > 5e-5)
         {
-            mSlacklineMeasurements.setWebbing(new Webbing("Custom", lineWeight, new StretchBehavior(new StretchPoint(30e3, 3*stretch))));
+            mSlacklineMeasurements.setWebbing(new Webbing("Custom", lineWeight, new StretchBehavior(new StretchPoint(10e3, stretchCoeff*1e4))));
         }
 
         double length = Double.valueOf(mLength.getText().toString());
