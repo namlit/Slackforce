@@ -287,11 +287,16 @@ public class DynamicForceFragment extends Fragment {
 
     private void calculateDynamicForces()
     {
-        double maxForces[] = mBounceSimulations.calculateMaximumForces(mHeightOfFallValue);
-        mGFactor.setText(String.format(Locale.ENGLISH, "%.2f", maxForces[0]));
-        mSlackerForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[1] / 1e3));
-        mMaxLineForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[2] / 1e3));
-        mMaxSag.setText(String.format(Locale.ENGLISH, "%.2f m", maxForces[3]));
+        try {
+            double maxForces[] = mBounceSimulations.calculateMaximumForces(mBounceSimulations.calculateHeightOfFallFromStandingReference(mHeightOfFallValue));
+            mGFactor.setText(String.format(Locale.ENGLISH, "%.2f", maxForces[0]));
+            mSlackerForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[1] / 1e3));
+            mMaxLineForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[2] / 1e3));
+            mMaxSag.setText(String.format(Locale.ENGLISH, "%.2f m", maxForces[3]));
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            //todo display error to user
+        }
     }
 
     private  void updateTextFields()

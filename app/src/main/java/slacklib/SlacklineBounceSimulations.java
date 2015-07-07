@@ -51,8 +51,16 @@ public class SlacklineBounceSimulations {
 
 	}
 
-	public double[] calculateMaximumForces(double heightOfBounce) {
-		double heightOfFall = calculateHeightOfFall(heightOfBounce);
+	/**
+	 * Does a simulation of a bounce or jump and returns the maximum forces involved
+	 * @param heightOfFall the maximum height during bouncing or jumping relative to the horizontal connection of the anchor points
+	 * @return array with the following maximum values: g-factor, Force on Slackliner, Force in Line, Sag of Line
+	 */
+	public double[] calculateMaximumForces(double heightOfFall) throws IllegalArgumentException{
+
+		if (mSlackCalc.getStretchCoefficient() == 0)
+			throw new IllegalArgumentException("Can not simulate bouncing with zero stretch");
+
 		if (heightOfFall < 0) {
 			mVerticalPositionOfSlackliner = heightOfFall;
 			mSpeedOfSlackliner = 0;
@@ -75,8 +83,20 @@ public class SlacklineBounceSimulations {
 		return forces;
 	}
 
-	public void simulateBouncing(double heightOfBounce, double simulationTime) {
-		double heightOfFall = calculateHeightOfFall(heightOfBounce);
+
+	/**
+	 *
+	 * @param heightOfBounce the maximum height during bouncing or jumping relative to the static standing position
+	 * @return the maximum height during bouncing or jumping relative to the horizontal connection of the anchor points
+	 */
+	public double calculateHeightOfFallFromStandingReference(double heightOfBounce)
+	{
+		mSlackCalc.updateVerticalForceFromWeight();
+		double sag = mSlackCalc.calculateSag();
+		return heightOfBounce - sag;
+	}
+
+	public void simulateBouncing(double heightOfFall, double simulationTime) {
 
 		double time[] = new double[(int) (simulationTime / mDeltaT) + 1];
 		double verticalPos[] = new double[(int) (simulationTime / mDeltaT) + 1];
@@ -205,16 +225,12 @@ public class SlacklineBounceSimulations {
 		mSlackCalc.setWebbing(webbing);
 	}
 
+
+
 //	private SlacklineCalculations getSlackCalc()
 //	{
 //		return mSlackCalc;
 //	}
 
-	private double calculateHeightOfFall(double heightOfBounce)
-	{
-		mSlackCalc.updateVerticalForceFromWeight();
-		double sag = mSlackCalc.calculateSag();
-		return heightOfBounce - sag;
-	}
 	
 }

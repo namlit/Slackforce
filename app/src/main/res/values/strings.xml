@@ -85,7 +85,7 @@
     <string name="measure_force__info_title_webbing">Webbing</string>
     <string name="measure_force__info_text_webbing">If you specify a specific Webbing the stretch and weight of the Line get filled automatically. If you can not find your Webbing, you can just enter those values manually.</string>
     <string name="measure_force__info_title_stretch">Stretch of the Line</string>
-    <string name="measure_force__info_text_stretch">The stretch of the Line is assumed to be linear. For the pretension measurement the stretch is only used to calculate the decrease of the weight per meter of the webbing due to the stretch of the Line. This should only be relevant on Lines with a very high stretch.</string>
+    <string name="measure_force__info_text_stretch">For the pretension measurement the stretch is only used to calculate the decrease of the weight per meter of the webbing due to the stretch of the Line. This should only be relevant on Lines with a very high stretch. The stretch is assumed to be linear here.</string>
     <string name="measure_force__info_title_line_weight">Weight of the Line</string>
     <string name="measure_force__info_text_line_weigth">The propagation speed of a wave on a tensioned Line is dependent on the weight per unit length of the Line. Therefore it is important put the right value here. </string>
     <string name="measure_force__info_title_length">Length of the Line</string>
@@ -93,12 +93,12 @@
 
 
     <string name="calculate_force__general_info_title">Calculate static Forces</string>
-    <string name="calculate_force__general_info_text">The calculation of the static forces is based on the formula F = sqrt(sag^2 + length^2/4) * m*g / (2 * sag). m is the weight of the slackliner and g the gravity acceleration. If the stretch behavior of the line is known, it is also possible to calculate the pretension of the line from the force. For Rodeo lines the initial sag without a slackliner on the line gets calculated. At the moment the stretch behavior is always assumed to be linear. You can change any parameter and get ask automatically which parameter you want to calculate. For further information on the parameters you can click on the parameter names.</string>
+    <string name="calculate_force__general_info_text">The calculation of the static forces is based on the formula F = sqrt(sag^2 + length^2/4) * m*g / (2 * sag). m is the weight of the slackliner and g the gravity acceleration. If the stretch behavior of the line is known, it is also possible to calculate the pretension of the line from the force. For Rodeo lines the initial sag without a slackliner on the line gets calculated. You can change any parameter and get ask automatically which parameter you want to calculate. For further information on the parameters you can click on the parameter names.</string>
 
     <string name="calculate_force__info_title_webbing">Webbing</string>
     <string name="calculate_force__info_text_webbing">If you select a webbing here the stretch gets filled automatically. If you do not find your webbing you can just type the stretch yourself</string>
     <string name="calculate_force__info_title_stretch">Stretch of the line</string>
-    <string name="calculate_force__info_text_stretch">The stretch of the line is needed to calculate the pretension and for rodeo lines the initial sag without a slacker of the line. At the moment the stretch is always assumed to be linear.</string>
+    <string name="calculate_force__info_text_stretch">The stretch of the line is needed to calculate the pretension and for rodeo lines the initial sag without a slacker of the line. If you change the stretch manually it is assumed to be linear. If you select a Webbing a custom stretch curve is used if available.</string>
     <string name="calculate_force__info_title_length">Length</string>
     <string name="calculate_force__info_text_length">The Length of the line in meters</string>
     <string name="calculate_force__info_title_sag">Sag of the Line</string>
@@ -114,12 +114,12 @@
 
 
     <string name="dynamic_force__general_info_title">Dynamic Forces</string>
-    <string name="dynamic_force__general_info_text">The maximum forces on the line and the slackliner during bouncing, jumping and leash falls get calculated. The actual calculation is more a simulation of the dynamic movement. For small time steps the position, force and acceleration of the slackliner get calculated. The maximum values, when the slackliners speed changes direction, gets saved.</string>
+    <string name="dynamic_force__general_info_text">The maximum forces on the line and the slackliner during bouncing, jumping and leash falls get calculated. The actual calculation is more a simulation of the dynamic movement. For small time steps the position, force and acceleration of the slackliner get calculated. The maximum values, when the slackliners speed changes direction, get saved.</string>
 
     <string name="dynamic_force__info_title_webbing">Webbing</string>
     <string name="dynamic_force__info_text_webbing">If you select a webbing here the stretch gets filled automatically. If you do not find your webbing you can just type the stretch yourself</string>
     <string name="dynamic_force__info_title_stretch">Stretch of the line</string>
-    <string name="dynamic_force__info_text_stretch">To do dynamic calculations on a slackline the stretch behavior of the line has to be known. At the moment the stretch behavior is alsways assumed to be linear.</string>
+    <string name="dynamic_force__info_text_stretch">To do dynamic calculations on a slackline the stretch behavior of the line has to be known. If you change the stretch manually it is assumed to be linear. If you select a Webbing a custom stretch curve is used if available.</string>
     <string name="dynamic_force__info_title_length">Length</string>
     <string name="dynamic_force__info_text_length">The Length of the line in meters</string>
     <string name="dynamic_force__info_title_pretension">Pretension</string>
