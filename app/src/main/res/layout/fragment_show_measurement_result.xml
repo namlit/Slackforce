@@ -19,7 +19,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
             android:id="@+id/resultText" />
 
         <TextView
@@ -32,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Measure again"
+            android:text="@string/measure_again"
             android:onClick="measureAgainButtonPressed"
             android:id="@+id/backToMeasurementButton" />
 

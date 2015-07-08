@@ -19,7 +19,7 @@ public class ParameterInfoDialog {
 
         builder.setTitle(title);
         builder.setView(view);
-        builder.setNeutralButton("Back", new DialogInterface.OnClickListener() {
+        builder.setNeutralButton(activity.getString(R.string.back), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //dialog.cancel();

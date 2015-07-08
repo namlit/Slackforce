@@ -16,10 +16,6 @@
     <string name="title_activity_select_webbing">Select Webbing</string>
     <string name="title_activity_choose_result_parameter">Choose Parameter to calculate</string>
 
-
-    <string name="measure_force_automatically__status_text_start_measurement">Press the start button to start the automatic measurement. Then hold the microphone of your phone next to the line and slap the line with your finger. Wait until the measurement is finished.</string>
-    <string name="measure_force_automatically__status_text_measuring">measuring...\nThe measurement will stop automatically when the time of oscillation got recognized. If you get no result you can slap the line again. </string>
-
     <string name="general_preference_key">GENERAL_PREFERENCE_KEY</string>
     <string name="measure_force_preference_key">MEASURE_FORCE_PREFERENCE_KEY</string>
     <string name="calculate_force_preference_key">CALCULATE_FORCE_PREFERENCE_KEY</string>
@@ -47,18 +43,23 @@
     <string name="abort">abort</string>
     <string name="back">back</string>
     <string name="stop">stop</string>
+    <string name="custom">Custom</string>
     
     <string name="webbing">Webbing:</string>
-    <string name="stretch">Stretch [%/10kN]:</string>
-    <string name="line_weight">Line Weight [g/m]:</string>
-    <string name="length">Length [m]</string>
-    <string name="sag">Sag [m]:</string>
-    <string name="slackliner_weight">Weight [kg]:</string>
-    <string name="anchor_force">Force [kN]:</string>
-    <string name="pretension">Pretension [kN]:</string>
-    <string name="initialSag">Initial Sag [m]:</string>
-    <string name="height_of_bounce">Bounce Height [m]:</string>
-    <string name="g_factor">g-factor</string>
+    <string name="stretch_with_unit">Stretch [%/10kN]:</string>
+    <string name="line_weight_with_unit">Line Weight [g/m]:</string>
+    <string name="length_with_unit">Length [m]:</string>
+    <string name="length">Length</string>
+    <string name="sag_with_unit">Sag [m]:</string>
+    <string name="sag">Sag</string>
+    <string name="slackliner_weight_with_unit">Weight [kg]:</string>
+    <string name="weight">Weight</string>
+    <string name="anchor_force_with_unit">Force [kN]:</string>
+    <string name="force">Force</string>
+    <string name="pretension_with_unit">Pretension [kN]:</string>
+    <string name="initialSag_with_unit">Initial Sag [m]:</string>
+    <string name="height_of_bounce_with_unit">Bounce Height [m]:</string>
+    <string name="g_factor">g-factor:</string>
     <string name="max_slacker_force">Slacker Force:</string>
     <string name="max_line_force">max. Line Force:</string>
     <string name="max_sag">max. Sag:</string>
@@ -90,6 +91,11 @@
     <string name="measure_force__info_text_line_weigth">The propagation speed of a wave on a tensioned Line is dependent on the weight per unit length of the Line. Therefore it is important put the right value here. </string>
     <string name="measure_force__info_title_length">Length of the Line</string>
     <string name="measure_force__info_text_length">The Length of the line between the two line lockers.</string>
+
+    <string name="measure_force_automatically__status_text_start_measurement">Press the start button to start the automatic measurement. Then hold the microphone of your phone next to the line and slap the line with your finger. Wait until the measurement is finished.</string>
+    <string name="measure_force_automatically__status_text_measuring">measuring...\nThe measurement will stop automatically when the time of oscillation got recognized. If you get no result you can slap the line again. </string>
+
+    <string name="measure_force_manual__description_text">Slap the Line, listen to the sound and type the rhythm on the button below</string>
 
 
     <string name="calculate_force__general_info_title">Calculate static Forces</string>
@@ -141,5 +147,7 @@
 
     <string name="dynamic_force__zero_stretch_toast">Can not calculate Forces. Please select a webbing with non zero stretch</string>
 
+
+    <string name="choose_parameter_title">Choose Parameter to Calculate</string>
     
 </resources>

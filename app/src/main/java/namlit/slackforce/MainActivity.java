@@ -299,7 +299,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             final CheckBox doNotShowAgain = (CheckBox) view.findViewById(R.id.doNotShowAgainCheckbox);
 
             builder.setView(view);
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (doNotShowAgain.isChecked())

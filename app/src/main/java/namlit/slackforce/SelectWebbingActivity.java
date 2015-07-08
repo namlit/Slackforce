@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class SelectWebbingActivity extends ListActivity {
 
         Intent intent = getIntent();
 
-        setTitle("Select Webbing");
+        setTitle(getString(R.string.title_activity_select_webbing));
         //setContentView(R.layout.activity_select_webbing);
 
         final ListView listView = getListView();

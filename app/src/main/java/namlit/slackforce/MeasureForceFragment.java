@@ -317,7 +317,7 @@ public class MeasureForceFragment extends Fragment {
             if (Math.abs(mSlacklineMeasurements.getStretchCoefficient() - stretchCoeff) > 5e-9 ||
                     Math.abs(mSlacklineMeasurements.getWeightPerMeter() - lineWeight) > 5e-5)
             {
-                mSlacklineMeasurements.setWebbing(new Webbing("Custom", lineWeight, new StretchBehavior(new StretchPoint(10e3, stretchCoeff*1e4))));
+                mSlacklineMeasurements.setWebbing(new Webbing(getString(R.string.custom), lineWeight, new StretchBehavior(new StretchPoint(10e3, stretchCoeff*1e4))));
             }
 
             double length = Double.valueOf(mLength.getText().toString());
@@ -333,7 +333,7 @@ public class MeasureForceFragment extends Fragment {
         Context context = getActivity();
         SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.measure_force_preference_key), Context.MODE_PRIVATE);
 
-        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), "Custom");
+        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), getString(R.string.custom));
         double stretch = sharedPreferences.getFloat(getString(R.string.preference_stretch_coefficient), (float) 1e-5);
         double weightPerMeter = sharedPreferences.getFloat(getString(R.string.preference_weight_per_meter), (float) 0.05);
         double length = sharedPreferences.getFloat(getString(R.string.preference_line_length), 50);

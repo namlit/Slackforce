@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="start measuring"
+            android:text="@string/start_measuring"
             android:id="@+id/startStopButton" />
 
         <TextView

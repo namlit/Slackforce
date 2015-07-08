@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Slap the Line, listen to the sound and type the rhythm on the button below"
+            android:text="@string/measure_force_manual__description_text"
             android:id="@+id/textView" />
 
         <Button

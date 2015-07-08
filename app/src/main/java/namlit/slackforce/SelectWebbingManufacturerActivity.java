@@ -24,7 +24,7 @@ public class SelectWebbingManufacturerActivity extends ListActivity {
 
         Intent intent = getIntent();
 
-        setTitle("Select Manufacturer");
+        setTitle(getString(R.string.title_activity_select_webbing_manufacturer_action));
         //setContentView(R.layout.activity_select_webbing_manufacturer);
 
         final ListView listView = getListView();

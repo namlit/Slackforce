@@ -340,7 +340,7 @@ public class CalcForceFragment extends Fragment {
                 case STRETCH:
                     double stretchCoeff = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
                     if (Math.abs(mSlackineCalculations.getStretchCoefficient() - stretchCoeff) > 5e-9 )
-                        mSlackineCalculations.setWebbing(new Webbing("Custom", new StretchBehavior(new StretchPoint(30e3, 3* stretchCoeff *1e4))));
+                        mSlackineCalculations.setWebbing(new Webbing(getString(R.string.custom), new StretchBehavior(new StretchPoint(30e3, 3* stretchCoeff *1e4))));
                     break;
 
                 case LENGTH:
@@ -463,9 +463,9 @@ public class CalcForceFragment extends Fragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        String items[] = {"Length", "Sag", "Weight", "Force"};
+        String items[] = {getString(R.string.length), getString(R.string.sag), getString(R.string.weight), getString(R.string.force)};
 
-        builder.setTitle("Choose Parameter to Calculate")
+        builder.setTitle(getString(R.string.choose_parameter_title))
                 .setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -498,7 +498,7 @@ public class CalcForceFragment extends Fragment {
         Context context = getActivity();
         SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.calculate_force_preference_key), Context.MODE_PRIVATE);
 
-        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), "Custom");
+        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), getString(R.string.custom));
         double stretch = sharedPreferences.getFloat(getString(R.string.preference_stretch_coefficient), (float) 1e-5);
         double length = sharedPreferences.getFloat(getString(R.string.preference_line_length), 50);
         double sag = sharedPreferences.getFloat(getString(R.string.preference_line_sag), 2);

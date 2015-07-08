@@ -318,7 +318,7 @@ public class DynamicForceFragment extends Fragment {
             double stretchCoeff = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
             if (Math.abs(mBounceSimulations.getStretchCoefficient() - stretchCoeff) > 5e-9)
             {
-                mBounceSimulations.setWebbing(new Webbing("Custom", new StretchBehavior(new StretchPoint(10e3, stretchCoeff *1e4))));
+                mBounceSimulations.setWebbing(new Webbing(getString(R.string.custom), new StretchBehavior(new StretchPoint(10e3, stretchCoeff *1e4))));
                 mWebbing.setText(mBounceSimulations.getWebbingName());
             }
 
@@ -361,7 +361,7 @@ public class DynamicForceFragment extends Fragment {
         if (webbing != null)
             mBounceSimulations.setWebbing(webbing);
         else {
-            mBounceSimulations.setWebbing(new Webbing("Custom", new StretchBehavior(new StretchPoint(30e3, 3*stretch*1e4))));
+            mBounceSimulations.setWebbing(new Webbing(getString(R.string.custom), new StretchBehavior(new StretchPoint(30e3, 3*stretch*1e4))));
         }
         mBounceSimulations.setLength(length);
         mBounceSimulations.setPretension(pretension);
