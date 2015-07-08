@@ -30,6 +30,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/option_about__github_address"
         android:id="@+id/textView4"
+        android:autoLink="web"
         android:layout_gravity="center"
         android:gravity="center" />
 

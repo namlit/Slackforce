@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -295,7 +296,7 @@ public class DynamicForceFragment extends Fragment {
             mMaxSag.setText(String.format(Locale.ENGLISH, "%.2f m", maxForces[3]));
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            //todo display error to user
+            Toast.makeText(getActivity(), getString(R.string.dynamic_force__zero_stretch_toast), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -317,7 +318,7 @@ public class DynamicForceFragment extends Fragment {
             double stretchCoeff = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
             if (Math.abs(mBounceSimulations.getStretchCoefficient() - stretchCoeff) > 5e-9)
             {
-                mBounceSimulations.setWebbing(new Webbing("Custom", new StretchBehavior(new StretchPoint(10e3, stretchCoeff *1e-4))));
+                mBounceSimulations.setWebbing(new Webbing("Custom", new StretchBehavior(new StretchPoint(10e3, stretchCoeff *1e4))));
                 mWebbing.setText(mBounceSimulations.getWebbingName());
             }
 

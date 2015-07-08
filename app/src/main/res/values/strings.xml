@@ -139,5 +139,7 @@
     <string name="dynamic_force__info_title_max_sag">Max. Sag</string>
     <string name="dynamic_force__info_text_max_sag">The maximum sag of the line during bouncing or jumping</string>
 
+    <string name="dynamic_force__zero_stretch_toast">Can not calculate Forces. Please select a webbing with non zero stretch</string>
+
     
 </resources>
