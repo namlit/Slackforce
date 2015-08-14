@@ -69,7 +69,7 @@ public class ShowMeasurementResultFragment extends Fragment {
         TextView forceText = (TextView) view.findViewById(R.id.resultText);
         forceText.setText(String.format("The Pretension is %.2f kN", mPretension / 1e3));
         TextView oscillationTimeText = (TextView) view.findViewById(R.id.timeOfOscillationText);
-        oscillationTimeText.setText(String.format("The measured time of oscillation is %.2f s", mTimeOfOscillation));
+        oscillationTimeText.setText(String.format("The measured time of oscillation is %.3f s", mTimeOfOscillation));
 
         return view;
     }

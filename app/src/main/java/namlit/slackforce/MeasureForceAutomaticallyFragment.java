@@ -1,11 +1,13 @@
 package namlit.slackforce;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Locale;
+
+import slacklib.Manufacturer;
 import slacklib.SlacklineSoundAudioProcessor;
 
 
@@ -29,6 +34,8 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     // TODO: Rename and change types of parameters
+
+    static final int GET_AUDIO_RECORDING_REQUEST = 1;
 
     private OnMeasurementResultListener mListener;
 
@@ -168,14 +175,27 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
     }
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(requestCode == GET_AUDIO_RECORDING_REQUEST) {
+
+            if (resultCode == Activity.RESULT_OK)
+            {
+                String filename = data.getData().getPath();
+                processMeasurement(filename);
+            }
+        }
+    }
+
 
     //private AudioManager audioManager=null;
     //private AudioTrack audioTrack=null;
     //byte[] buffer = new byte[freq];
 
-    public void startMeasurement()
-    {
 
+    public void processMeasurement(final String filename)
+    {
         mStartStopButton.setEnabled(false);
         //mStartStopButton.setText("Abort measurement");
         mStatusText.setText(R.string.measure_force_automatically__status_text_measuring);
@@ -191,62 +211,41 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 
-//        audioTrack = new AudioTrack(AudioManager.ROUTE_HEADSET, freq,
-//                AudioFormat.CHANNEL_CONFIGURATION_MONO,
-//                MediaRecorder.AudioEncoder.AMR_NB, bufferSize,
-//                AudioTrack.MODE_STREAM);
-
-
 
         final short[] buffer = new short[bufferSize];
         mAudioRecord.startRecording();
 
 
+        int numberOfShortsWritten = 0;
 
-        mAudioThread = new Thread(new Runnable() {
-            public void run() {
+        try {
 
-                int numberOfShortsWritten = 0;
+            mAudioProcessor.processFromFile(filename);
 
+            if (mListener != null)
+                mListener.onMeasurementResult(mAudioProcessor.getTimeOfOscillation());
 
-                    try {
-
-                        //mAudioProcessor.processFromFile("/storage/sdcard0/Music/SlacklineSnap/Aufnahme_jumpline.wav");
-                        do  {
-//                        if (!mIsMeasuring)
-//                        {
-//                            stopMeasuring();
-//                            return;
-//                        }
-                        numberOfShortsWritten = mAudioRecord.read(buffer, 0, bufferSize);
-                        //audioTrack.write(buffer, 0, buffer.length);
-
-                        } while (!mAudioProcessor.process(buffer, 0, numberOfShortsWritten));
+            stopMeasuring();
 
 
-                    //mAudioRecord.stop();
-                    //mAudioRecord.release();
+        } catch (Throwable t) {
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mListener != null)
-                                mListener.onMeasurementResult(mAudioProcessor.getTimeOfOscillation());
-
-                            stopMeasuring();
-                        }
-                    });
-
-                    } catch (Throwable t) {
-
-                        t.printStackTrace();
-                    }
-
-            }
-        });
-        mAudioThread.start();
+            t.printStackTrace();
+        }
 
 
+    }
+    public void startMeasurement()
+    {
+        //Uri startDir = Uri.parse(Environment.getExternalStorageDirectory().getPath() + "/Music/");
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        //intent.setData(startDir);
+        intent.setType("*/.wav");
+
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(intent, GET_AUDIO_RECORDING_REQUEST);
+        }
     }
 
     private void stopMeasuring()

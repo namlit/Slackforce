@@ -94,6 +94,8 @@ public class SlacklineSoundAudioProcessor {
             do {
 
                 numberOfFrames = wavFile.readFrames(buffer, 0, BUFFERSIZE);
+                if(numberOfFrames == 0)
+                    return false;
             } while (!process(buffer, 0, numberOfFrames));
 
 
