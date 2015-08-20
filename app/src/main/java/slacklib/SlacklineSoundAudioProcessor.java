@@ -9,11 +9,12 @@ import WavFile.*;
 
 public class SlacklineSoundAudioProcessor {
 
-    private final short THRESHOLD = (short) (0.9 * 32767);
+    private final short MAX_AUDIO_VALUE = (short) 32767;
+    private final double MAXIMUM_DAMPING_FACTOR = 0.4;
     private final int MAX_NUMBER_OF_PEAKS = 5;
     private final int MINIMUM_NUMBER_OF_BOUNCES = 2;
     private final double BOUNCING_TIME = 0.08;
-    private final double COMPRESSION_TIME = 0.002;
+    //private final double COMPRESSION_TIME = 0.002;
 //    private final double MAX_TIME_BETWEEN_PEAKS = 2;
     private final double MAX_VARIATION_TIME_BEETWEEN_PEAKS = BOUNCING_TIME;
 
@@ -23,13 +24,18 @@ public class SlacklineSoundAudioProcessor {
 
     private double mFramerate;
     private double mCurrentTime;
+    private short mCurrentThreshold;
     private double mDebounceFinishedTime;
-    private double mCompressionFinishedTime = 0;
+    private int mCompressionCount = 0;
+    private boolean mIsSignChangeDetected = false;
     private double mPeakTimes[];
     private double mTimeOfOscillation;
     private int mNumberOfDetectedPeaks;
     private int mNumberOfBounces;
     private int mRequiredNumberOfPeaks = 4;
+    private int mRequiredNumberOfBounces;
+    private short mMaximumValueDuringDebounce;
+    private double mTimeOfMaximumValueDuringDebounce;
     private ProcessStatus mProcessStatus = ProcessStatus.STOPPED;
 
     public SlacklineSoundAudioProcessor(double framerate)
@@ -47,8 +53,11 @@ public class SlacklineSoundAudioProcessor {
     {
         short currentSamplingPoint;
 
-        if (mCurrentTime == 0)
+        if (mCurrentTime == 0) {
             mProcessStatus = ProcessStatus.ACTIVE;
+            mCurrentThreshold = (short) (MAXIMUM_DAMPING_FACTOR * MAX_AUDIO_VALUE);
+            mRequiredNumberOfBounces = MINIMUM_NUMBER_OF_BOUNCES;
+        }
 
         for( int i = offsetInShorts; i < sizeInShorts; i++)
         {
@@ -113,32 +122,66 @@ public class SlacklineSoundAudioProcessor {
             case STOPPED:
                 return;
             case WAIT_FOT_DEBOUNCE:
-                if (samplingPoint > THRESHOLD && mCurrentTime > mCompressionFinishedTime)
-                {
-                    mNumberOfBounces++;
-                    mCompressionFinishedTime = mCurrentTime + COMPRESSION_TIME;
-                }
-                if(mCurrentTime >= mDebounceFinishedTime) {
-                    if (mNumberOfBounces < MINIMUM_NUMBER_OF_BOUNCES)
-                        mNumberOfDetectedPeaks--; // ignore Last Peak
-                    mProcessStatus = ProcessStatus.ACTIVE;
-                }
+                processSamplingPointsDuringDebounce(samplingPoint);
                 return;
 
         }
-        if (samplingPoint > THRESHOLD)
+        if (samplingPoint > mCurrentThreshold)
         {
-            if (timeVariationToLastMeasurement(mCurrentTime) > MAX_VARIATION_TIME_BEETWEEN_PEAKS)
-                mNumberOfDetectedPeaks = 0;
-
-            adjustRequiredNumberOfPeaks();
-
-            mPeakTimes[mNumberOfDetectedPeaks] = mCurrentTime;
-            mNumberOfDetectedPeaks++;
+            mTimeOfMaximumValueDuringDebounce = mCurrentTime;
+            mMaximumValueDuringDebounce = samplingPoint;
             mDebounceFinishedTime = mCurrentTime + BOUNCING_TIME;
-            mCompressionFinishedTime = mCurrentTime + COMPRESSION_TIME;
+            //mCompressionFinishedTime = mCurrentTime + COMPRESSION_TIME;
+            mIsSignChangeDetected = false;
+            mCompressionCount = 0;
             mProcessStatus = ProcessStatus.WAIT_FOT_DEBOUNCE;
             mNumberOfBounces = 1;
+
+
+        }
+    }
+
+    private void processSamplingPointsDuringDebounce(short samplingPoint)
+    {
+        if (samplingPoint > mMaximumValueDuringDebounce) {
+            mMaximumValueDuringDebounce = samplingPoint;
+            mTimeOfMaximumValueDuringDebounce = mCurrentTime;
+        }
+
+        if (samplingPoint == MAX_AUDIO_VALUE)
+            mCompressionCount++;
+
+        if(samplingPoint < 0)
+        {
+            mIsSignChangeDetected = true;
+        }
+
+        if (samplingPoint > mCurrentThreshold && mIsSignChangeDetected)
+        {
+            mNumberOfBounces++;
+            mIsSignChangeDetected = false;
+            //mCompressionFinishedTime = mCurrentTime + COMPRESSION_TIME;
+        }
+        if(mCurrentTime >= mDebounceFinishedTime) {
+
+            if (timeVariationToLastMeasurement(mTimeOfMaximumValueDuringDebounce) > MAX_VARIATION_TIME_BEETWEEN_PEAKS)
+                mNumberOfDetectedPeaks = 0;
+
+            adjustRequiredNumberOfPeaks(mTimeOfMaximumValueDuringDebounce);
+            mCurrentThreshold = (short) (MAXIMUM_DAMPING_FACTOR * mMaximumValueDuringDebounce);
+            if(mCompressionCount > 20)
+                mCurrentThreshold = (short) (0.7 * mMaximumValueDuringDebounce);
+            mRequiredNumberOfBounces = (int) (0.6 * mNumberOfBounces);
+            if(mRequiredNumberOfBounces < MINIMUM_NUMBER_OF_BOUNCES)
+                mRequiredNumberOfBounces = MINIMUM_NUMBER_OF_BOUNCES;
+
+            mPeakTimes[mNumberOfDetectedPeaks] = mTimeOfMaximumValueDuringDebounce;
+            mNumberOfDetectedPeaks++;
+
+            if (mNumberOfBounces < mRequiredNumberOfBounces)
+                mNumberOfDetectedPeaks--; // ignore Last Peak
+
+            mProcessStatus = ProcessStatus.ACTIVE;
 
             if (mNumberOfDetectedPeaks >= mRequiredNumberOfPeaks)
                 mProcessStatus = ProcessStatus.STOPPED;
@@ -194,9 +237,9 @@ public class SlacklineSoundAudioProcessor {
         return true;
     }
 
-    private void adjustRequiredNumberOfPeaks()
+    private void adjustRequiredNumberOfPeaks(double timeOfLastPeak)
     {
-        double distanceToLastPeak = distanceToLastPeak(mCurrentTime);
+        double distanceToLastPeak = distanceToLastPeak(timeOfLastPeak);
 
         mRequiredNumberOfPeaks = MAX_NUMBER_OF_PEAKS;
 
