@@ -15,7 +15,7 @@ always check the values for reasonability. The creator of the App is not respons
 of the calculated values.
 
 ## Get the App
-The App is currently available as a beta version at the playstore. To install the app you need to join the google group https://groups.google.com/forum/#!forum/slackforce-beta-tester and follow the instructions on the following link: https://play.google.com/apps/testing/namlit.slackforce
+The App is currently available as a beta version at the playstore. To install the app you need to follow the instructions on the following link: https://play.google.com/apps/testing/namlit.slackforce
 
 ## Bugs and feature requests
 If you find any bugs or have feature requests you can open an issue for that here on github. Before opening a new issue
