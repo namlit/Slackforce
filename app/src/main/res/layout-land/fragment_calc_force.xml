@@ -1,19 +1,18 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="namlit.slackforce.DynamicForceFragment">
+    android:layout_height="match_parent" tools:context="namlit.slackforce.CalcForceFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/scrollView2"
-        android:layout_gravity="center">
+        android:id="@+id/scrollView"
+        android:layout_gravity="center" >
 
         <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal|top">
+            android:layout_height="match_parent">
 
             <TableRow
                 android:layout_width="match_parent"
@@ -28,26 +27,28 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New Button"
                     android:id="@+id/webbing" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/stretch_with_unit"
-                    android:id="@+id/stretchText" />
+                    android:id="@+id/stretchText"
+                    android:layout_column="2" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
                     android:ems="10"
-                    android:id="@+id/stretch" />
+                    android:id="@+id/stretch"
+                    android:layout_column="3" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
             </TableRow>
 
             <TableRow
@@ -58,54 +59,35 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/length_with_unit"
-                    android:id="@+id/lengthText"
-                    android:layout_column="0" />
+                    android:id="@+id/lengthText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
                     android:ems="10"
-                    android:id="@+id/length"
-                    android:layout_column="1" />
+                    android:id="@+id/length" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sag_with_unit"
+                    android:id="@+id/sagText"
+                    android:layout_column="2" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/sag"
+                    android:layout_column="3" />
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pretension_with_unit"
-                    android:id="@+id/pretensionText"
-                    android:layout_column="0" />
-
-                <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:ems="10"
-                    android:id="@+id/pretension"
-                    android:layout_column="1" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/initialSag_with_unit"
-                    android:id="@+id/initialSagText" />
-
-                <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:ems="10"
-                    android:id="@+id/initialSag" />
             </TableRow>
 
             <TableRow
@@ -116,35 +98,34 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/slackliner_weight_with_unit"
-                    android:id="@+id/weightText"
-                    android:layout_column="0" />
+                    android:id="@+id/weightText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
                     android:ems="10"
-                    android:id="@+id/weight"
-                    android:layout_column="1" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                    android:id="@+id/weight" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/height_of_bounce_with_unit"
-                    android:id="@+id/heightOfFallText" />
+                    android:text="@string/anchor_force_with_unit"
+                    android:id="@+id/forceText"
+                    android:layout_column="2" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal|numberSigned"
+                    android:inputType="numberDecimal"
                     android:ems="10"
-                    android:id="@+id/heightOfFall"
-                    android:layout_column="1" />
+                    android:id="@+id/force"
+                    android:layout_column="3" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
             </TableRow>
 
@@ -155,76 +136,38 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/g_factor"
-                    android:id="@+id/gFactorText" />
+                    android:text="@string/pretension_with_unit"
+                    android:id="@+id/pretensionText" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/pretension" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/gFactor" />
+                    android:text="@string/initialSag_with_unit"
+                    android:id="@+id/sagWithoutSlackerText"
+                    android:layout_column="2" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/sagWithoutSlacker"
+                    android:layout_column="3" />
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/max_slacker_force"
-                    android:id="@+id/maxSlackerForceText"
-                    android:layout_column="0" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/maxVerticalForce"
-                    android:layout_column="1" />
-
             </TableRow>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/max_line_force"
-                    android:id="@+id/maxLineForceText"
-                    android:layout_column="0" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/maxLineForce"
-                    android:layout_column="1" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/max_sag"
-                    android:id="@+id/maxSagText"
-                    android:layout_column="0" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/maxSag"
-                    android:layout_column="1" />
-
-            </TableRow>
         </TableLayout>
     </ScrollView>
-
 </FrameLayout>
