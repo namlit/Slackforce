@@ -47,6 +47,7 @@
     
     <string name="webbing">Webbing:</string>
     <string name="stretch_with_unit">Stretch [%/10kN]:</string>
+    <string name="position">Position:</string>
     <string name="line_weight_with_unit">Line Weight [g/m]:</string>
     <string name="length_with_unit">Length [m]:</string>
     <string name="length">Length</string>

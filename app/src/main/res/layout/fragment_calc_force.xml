@@ -27,6 +27,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:id="@+id/webbing" />
             </TableRow>
 
@@ -43,9 +44,33 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/stretch"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/position"
+                    android:id="@+id/slacklinerPositionText"
+                    android:layout_column="0" />
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/slacklinerPosition"
+                    android:layout_column="1"
+                    android:max="10"
+                    android:indeterminate="false"
+                    android:progress="5" />
             </TableRow>
 
             <TableRow
@@ -61,6 +86,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/length" />
@@ -79,6 +105,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/sag" />
@@ -97,6 +124,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/weight" />
@@ -115,6 +143,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/force" />
@@ -133,6 +162,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/pretension" />
@@ -151,6 +181,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/sagWithoutSlacker" />

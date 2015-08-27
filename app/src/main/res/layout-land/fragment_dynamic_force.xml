@@ -28,6 +28,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="New Button"
                     android:id="@+id/webbing" />
 
@@ -41,10 +42,34 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/stretch"
                     android:layout_column="3" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/position"
+                    android:id="@+id/slacklinerPositionText"
+                    android:layout_column="0" />
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/slacklinerPosition"
+                    android:layout_column="1"
+                    android:max="10"
+                    android:indeterminate="false"
+                    android:progress="5"
+                    android:layout_span="3" />
             </TableRow>
 
             <TableRow
@@ -67,6 +92,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/length"
@@ -82,6 +108,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/pretension"
@@ -107,6 +134,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/initialSag" />
@@ -121,6 +149,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/weight"
@@ -146,6 +175,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal|numberSigned"
                     android:ems="10"
                     android:id="@+id/heightOfFall"
@@ -166,6 +196,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/gFactor" />
 
@@ -179,6 +210,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/maxVerticalForce"
                     android:layout_column="3" />
@@ -204,6 +236,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/maxLineForce"
                     android:layout_column="1" />
@@ -218,6 +251,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/maxSag"
                     android:layout_column="3" />
