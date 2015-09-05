@@ -19,14 +19,12 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/webbing"
                     android:id="@+id/webbingText" />
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/WebbingButtonStyle"
                     android:id="@+id/webbing" />
             </TableRow>
 
@@ -35,14 +33,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/stretch_with_unit"
                     android:id="@+id/stretchText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/stretch"/>
@@ -53,14 +51,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/length_with_unit"
                     android:id="@+id/lengthText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/length" />
@@ -71,14 +69,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/sag_with_unit"
                     android:id="@+id/sagText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/sag" />
@@ -89,14 +87,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/slackliner_weight_with_unit"
                     android:id="@+id/weightText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/weight" />
@@ -107,14 +105,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/anchor_force_with_unit"
                     android:id="@+id/forceText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/force" />
@@ -125,14 +123,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/pretension_with_unit"
                     android:id="@+id/pretensionText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/pretension" />
@@ -143,14 +141,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/initialSag_with_unit"
                     android:id="@+id/sagWithoutSlackerText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/sagWithoutSlacker" />

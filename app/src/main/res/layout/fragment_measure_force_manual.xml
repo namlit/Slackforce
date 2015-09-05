@@ -25,7 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:text="Tap 4 times"
-            android:id="@+id/rhythmButton" />
+            android:id="@+id/rhythmButton"
+            android:background="@android:drawable/btn_default" />
 
     </LinearLayout>
 </FrameLayout>

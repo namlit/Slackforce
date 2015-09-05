@@ -23,20 +23,16 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/ParameterNameStyle"
                         android:text="@string/webbing"
                         android:id="@+id/webbingText" />
 
                     <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="New Button"
-                        android:id="@+id/webbing" />
+                        style="@style/WebbingButtonStyle"
+                        android:id="@+id/webbing"/>
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/ParameterNameStyle"
                         android:text="@string/stretch_with_unit"
                         android:id="@+id/stretchText"
                         android:layout_column="2" />
@@ -44,6 +40,7 @@
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:inputType="numberDecimal"
                         android:ems="10"
                         android:id="@+id/stretch"
@@ -61,21 +58,20 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/ParameterNameStyle"
                         android:text="@string/line_weight_with_unit"
                         android:id="@+id/lineWeightText" />
 
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:inputType="numberDecimal"
                         android:ems="10"
                         android:id="@+id/lineWeight" />
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/ParameterNameStyle"
                         android:text="@string/length_with_unit"
                         android:id="@+id/lengthText"
                         android:layout_column="2" />
@@ -83,6 +79,7 @@
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:inputType="numberDecimal"
                         android:ems="10"
                         android:id="@+id/length"

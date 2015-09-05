@@ -20,15 +20,12 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/webbing"
                     android:id="@+id/webbingText" />
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="New Button"
+                    style="@style/WebbingButtonStyle"
                     android:id="@+id/webbing" />
             </TableRow>
 
@@ -37,14 +34,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/stretch_with_unit"
                     android:id="@+id/stretchText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/stretch" />
@@ -55,15 +52,16 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/length_with_unit"
                     android:id="@+id/lengthText"
-                    android:layout_column="0" />
+                    android:layout_column="0"
+                    android:autoText="false" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/length"
@@ -75,8 +73,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/pretension_with_unit"
                     android:id="@+id/pretensionText"
                     android:layout_column="0" />
@@ -84,6 +81,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/pretension"
@@ -95,14 +93,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/initialSag_with_unit"
                     android:id="@+id/initialSagText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/initialSag" />
@@ -113,8 +111,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/slackliner_weight_with_unit"
                     android:id="@+id/weightText"
                     android:layout_column="0" />
@@ -122,6 +119,7 @@
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/weight"
@@ -133,14 +131,14 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/height_of_bounce_with_unit"
                     android:id="@+id/heightOfFallText" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:inputType="numberDecimal|numberSigned"
                     android:ems="10"
                     android:id="@+id/heightOfFall"
@@ -153,16 +151,19 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/g_factor"
                     android:id="@+id/gFactorText" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/gFactor" />
+                    android:id="@+id/gFactor"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp" />
             </TableRow>
 
             <TableRow
@@ -170,18 +171,21 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/max_slacker_force"
                     android:id="@+id/maxSlackerForceText"
                     android:layout_column="0" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/maxVerticalForce"
-                    android:layout_column="1" />
+                    android:layout_column="1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp" />
 
             </TableRow>
 
@@ -190,18 +194,21 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/max_line_force"
                     android:id="@+id/maxLineForceText"
                     android:layout_column="0" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/maxLineForce"
-                    android:layout_column="1" />
+                    android:layout_column="1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp" />
 
             </TableRow>
 
@@ -210,18 +217,22 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ParameterNameStyle"
                     android:text="@string/max_sag"
                     android:id="@+id/maxSagText"
                     android:layout_column="0" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:id="@+id/maxSag"
-                    android:layout_column="1" />
+                    android:layout_column="1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp" />
 
             </TableRow>
         </TableLayout>
