@@ -40,7 +40,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    SectionsPagerAdapter mSectionsPagerAdapter;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -189,11 +189,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             super(fm);
         }
 
-        private MeasureForceFragment mMeasurementForceFragment;
+        private MeasureForceFragment mMeasureForceFragment;
 
         public MeasureForceFragment getMeasurementForceFragment()
         {
-            return mMeasurementForceFragment;
+            return mMeasureForceFragment;
         }
 
         @Override
@@ -202,14 +202,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position)
             {
-                case 0:
+                case MEASURE_FORCE_POSITION:
                     mMeasureForceFragment = MeasureForceFragment.newInstance();
                     return mMeasureForceFragment;
-                case 1:
+                case CALCULATE_FORCE_POSITION:
                     return CalcForceFragment.newInstance();
             }
             return DynamicForceFragment.newInstance();
-            //return PlaceholderFragment.newInstance(position + 1);
         }
 
         @Override
@@ -238,6 +237,20 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     {
         MeasureForceFragment measurementFragment = (MeasureForceFragment) getSupportFragmentManager().findFragmentByTag(makeFragmentName(MEASURE_FORCE_POSITION));
         measurementFragment.onMeasurementResult(timeOfOscillation);
+    }
+
+    public void pasteValuesToAllFragments(Bundle values)
+    {
+        MeasureForceFragment measurementFragment = (MeasureForceFragment) getSupportFragmentManager().findFragmentByTag(makeFragmentName(MEASURE_FORCE_POSITION));
+        CalcForceFragment calcForceFragment = (CalcForceFragment) getSupportFragmentManager().findFragmentByTag(makeFragmentName(CALCULATE_FORCE_POSITION));
+        DynamicForceFragment dynamicForceFragment = (DynamicForceFragment) getSupportFragmentManager().findFragmentByTag(makeFragmentName(DYNAMIC_FORCE_POSITION));
+
+        if (measurementFragment != null)
+            measurementFragment.pasteValues(values);
+        if (calcForceFragment != null)
+            calcForceFragment.pasteValues(values);
+        if (dynamicForceFragment != null)
+            dynamicForceFragment.pasteValues(values);
     }
 
     public void measureAgainButtonPressed(View v)

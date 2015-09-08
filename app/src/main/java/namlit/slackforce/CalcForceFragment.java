@@ -49,6 +49,14 @@ public class CalcForceFragment extends Fragment {
     static final int GET_WEBBING_REQUEST = 1;
     static final int GET_PARAMETER_TO_CALCULATE_REQUEST = 2;
 
+    static final String FRAGMENT_NAME = "FRAGMENT_NAME";
+    static final String CALC_FORCE_FRAGMENT = "CALC_FORCE_FRAGMENT";
+    static final String WEBBING_NAME = "WEBBING_NAME";
+    static final String WEBBING_STRETCH = "WEBBING_STRETCH";
+    static final String LINE_LENGTH = "LINE_LENGTH";
+    static final String SLACKLINER_WEIGHT = "SLACKLINER_WEIGHT";
+    static final String PRETENSION = "PRETENSION";
+
     private OnFragmentInteractionListener mListener;
     private SlacklineCalculations mSlackineCalculations;
     private Parameter mParameterToCalculate = Parameter.FORCE;
@@ -62,6 +70,7 @@ public class CalcForceFragment extends Fragment {
     private EditText mForce;
     private EditText mPretension;
     private EditText mSagWithoutSlacker;
+    private Button mCopyValuesButton;
 
     /**
      * Use this factory method to create a new instance of
@@ -110,10 +119,11 @@ public class CalcForceFragment extends Fragment {
         mForce = (EditText) view.findViewById(R.id.force);
         mPretension = (EditText) view.findViewById(R.id.pretension);
         mSagWithoutSlacker = (EditText) view.findViewById(R.id.sagWithoutSlacker);
+        mCopyValuesButton = (Button) view.findViewById(R.id.copyValuesButton);
 
-        updateAllTextFields();
+
         updateCalculations();
-        markParameterToCalculate();
+
 
         mStretch.clearFocus();
 
@@ -152,7 +162,7 @@ public class CalcForceFragment extends Fragment {
         mLength.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
+                if (!hasFocus) {
                     mParameterChanged = Parameter.LENGTH;
                     update();
                 }
@@ -170,7 +180,7 @@ public class CalcForceFragment extends Fragment {
         mSag.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
+                if (!hasFocus) {
                     mParameterChanged = Parameter.SAG;
                     update();
                 }
@@ -188,7 +198,7 @@ public class CalcForceFragment extends Fragment {
         mWeight.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
+                if (!hasFocus) {
                     mParameterChanged = Parameter.WEIGHT;
                     update();
                 }
@@ -207,7 +217,7 @@ public class CalcForceFragment extends Fragment {
         mForce.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
+                if (!hasFocus) {
                     mParameterChanged = Parameter.FORCE;
                     update();
                 }
@@ -225,7 +235,7 @@ public class CalcForceFragment extends Fragment {
         mPretension.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
+                if (!hasFocus) {
                     mParameterChanged = Parameter.PRETENSION;
                     update();
                 }
@@ -243,10 +253,16 @@ public class CalcForceFragment extends Fragment {
         mSagWithoutSlacker.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
+                if (!hasFocus) {
                     mParameterChanged = Parameter.SAGWITHOUTSLACKER;
                     update();
                 }
+            }
+        });
+        mCopyValuesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                copyValues();
             }
         });
 
@@ -254,6 +270,14 @@ public class CalcForceFragment extends Fragment {
 
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateAllTextFields();
+        markParameterToCalculate();
+    }
+
 
 
 
@@ -492,13 +516,58 @@ public class CalcForceFragment extends Fragment {
 
     }
 
+    private void copyValues()
+    {
+        Bundle valueBundle = new Bundle();
+        valueBundle.putString(FRAGMENT_NAME, CALC_FORCE_FRAGMENT);
+        valueBundle.putString(WEBBING_NAME, mWebbing.getText().toString());
+        valueBundle.putDouble(WEBBING_STRETCH, Double.valueOf(mStretch.getText().toString()));
+        valueBundle.putDouble(LINE_LENGTH, Double.valueOf(mLength.getText().toString()));
+        valueBundle.putDouble(SLACKLINER_WEIGHT, Double.valueOf(mWeight.getText().toString()));
+        valueBundle.putDouble(PRETENSION, 1e3*Double.valueOf(mPretension.getText().toString()));
+
+        ((MainActivity) getActivity()).pasteValuesToAllFragments(valueBundle);
+    }
+
+    public void pasteValues(Bundle valueBundle) {
+        if (valueBundle.getString(FRAGMENT_NAME).equals(CALC_FORCE_FRAGMENT))
+            return;
+
+        String webbingName = valueBundle.getString(WEBBING_NAME);
+        double webbingStretch = valueBundle.getDouble(WEBBING_STRETCH);
+        double lineLength = valueBundle.getDouble(LINE_LENGTH);
+        double slacklinerWeight = valueBundle.getDouble(SLACKLINER_WEIGHT);
+        double pretension = valueBundle.getDouble(PRETENSION);
+
+        Webbing webbing = Webbing.getWebbingByName(webbingName);
+        if (webbing != null)
+            mSlackineCalculations.setWebbing(webbing);
+        else {
+            mSlackineCalculations.setWebbing(new Webbing(webbingName, new StretchBehavior(new StretchPoint(10e3, 0.01 * webbingStretch))));
+        }
+        if (lineLength != 0)
+            mSlackineCalculations.setLength(lineLength);
+        if (slacklinerWeight != 0)
+            mSlackineCalculations.setWeightOfSlackliner(slacklinerWeight);
+        if (pretension != 0)
+            mSlackineCalculations.setPretension(pretension);
+
+        mParameterToCalculate = Parameter.SAG;
+
+        updateCalculations();
+        if (isResumed())
+        {
+            updateAllTextFields();
+            markParameterToCalculate();
+        }
+    }
 
     private void restoreParameters()
     {
         Context context = getActivity();
         SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.calculate_force_preference_key), Context.MODE_PRIVATE);
 
-        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), getString(R.string.custom));
+        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), "White Magic");
         double stretch = sharedPreferences.getFloat(getString(R.string.preference_stretch_coefficient), (float) 1e-5);
         double length = sharedPreferences.getFloat(getString(R.string.preference_line_length), 50);
         double sag = sharedPreferences.getFloat(getString(R.string.preference_line_sag), 2);

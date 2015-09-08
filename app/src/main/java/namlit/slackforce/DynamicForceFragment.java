@@ -34,6 +34,14 @@ public class DynamicForceFragment extends Fragment {
 
     static final int GET_WEBBING_REQUEST = 1;
 
+    static final String FRAGMENT_NAME = "FRAGMENT_NAME";
+    static final String DYNAMIC_FORCE_FRAGMENT = "DYNAMIC_FORCE_FRAGMENT";
+    static final String WEBBING_NAME = "WEBBING_NAME";
+    static final String WEBBING_STRETCH = "WEBBING_STRETCH";
+    static final String LINE_LENGTH = "LINE_LENGTH";
+    static final String SLACKLINER_WEIGHT = "SLACKLINER_WEIGHT";
+    static final String PRETENSION = "PRETENSION";
+
     private OnFragmentInteractionListener mListener;
     private SlacklineBounceSimulations mBounceSimulations;
     private Button mWebbing;
@@ -47,6 +55,7 @@ public class DynamicForceFragment extends Fragment {
     private TextView mMaxSag;
     private TextView mSlackerForce;
     private TextView mMaxLineForce;
+    private Button mCopyValuesButton;
     private double mHeightOfFallValue;
 
     /**
@@ -99,6 +108,7 @@ public class DynamicForceFragment extends Fragment {
         mSlackerForce = (TextView) view.findViewById(R.id.maxVerticalForce);
         mMaxLineForce = (TextView) view.findViewById(R.id.maxLineForce);
         mMaxSag = (TextView) view.findViewById(R.id.maxSag);
+        mCopyValuesButton = (Button) view.findViewById(R.id.copyValuesButton);
 
         mWebbing.setText(mBounceSimulations.getWebbingName());
         mStretch.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getStretchCoefficient() / 1e-6));
@@ -107,8 +117,6 @@ public class DynamicForceFragment extends Fragment {
         mWeight.setText(String.format(Locale.ENGLISH, "%.1f", mBounceSimulations.getWeight() ));
         mHeightOfFallEditText.setText(String.format(Locale.ENGLISH, "%.1f", mHeightOfFallValue));
 
-        updateTextFields();
-        calculateDynamicForces();
 
         mWebbing.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -206,11 +214,25 @@ public class DynamicForceFragment extends Fragment {
                 return true;
             }
         });
+        mCopyValuesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                copyValues();
+            }
+        });
 
         setInfoClickListeners(view);
 
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        calculateAndDisplayDynamicForces();
+        updateTextFields();
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -273,7 +295,7 @@ public class DynamicForceFragment extends Fragment {
                 mWebbing.setText(mBounceSimulations.getWebbingName());
                 mStretch.setText(String.format(Locale.ENGLISH, "%.2f", mBounceSimulations.getStretchCoefficient() / 1e-6));
 
-                calculateDynamicForces();
+                calculateAndDisplayDynamicForces();
             }
         }
     }
@@ -283,10 +305,10 @@ public class DynamicForceFragment extends Fragment {
     {
         readFromTextFields();
         updateTextFields();
-        calculateDynamicForces();
+        calculateAndDisplayDynamicForces();
     }
 
-    private void calculateDynamicForces()
+    private void calculateAndDisplayDynamicForces()
     {
         try {
             double maxForces[] = mBounceSimulations.calculateMaximumForces(mBounceSimulations.calculateHeightOfFallFromStandingReference(mHeightOfFallValue));
@@ -341,6 +363,52 @@ public class DynamicForceFragment extends Fragment {
 
             t.printStackTrace();
         }
+    }
+
+    private void copyValues()
+    {
+        Bundle valueBundle = new Bundle();
+        valueBundle.putString(FRAGMENT_NAME, DYNAMIC_FORCE_FRAGMENT);
+        valueBundle.putString(WEBBING_NAME, mWebbing.getText().toString());
+        valueBundle.putDouble(WEBBING_STRETCH, Double.valueOf(mStretch.getText().toString()));
+        valueBundle.putDouble(LINE_LENGTH, Double.valueOf(mLength.getText().toString()));
+        valueBundle.putDouble(SLACKLINER_WEIGHT, Double.valueOf(mWeight.getText().toString()));
+        valueBundle.putDouble(PRETENSION, 1e3*Double.valueOf(mPretension.getText().toString()));
+
+        ((MainActivity) getActivity()).pasteValuesToAllFragments(valueBundle);
+    }
+
+    public void pasteValues(Bundle valueBundle)
+    {
+        if (valueBundle.getString(FRAGMENT_NAME).equals(DYNAMIC_FORCE_FRAGMENT))
+            return;
+
+        String webbingName = valueBundle.getString(WEBBING_NAME);
+        double webbingStretch = valueBundle.getDouble(WEBBING_STRETCH);
+        double lineLength = valueBundle.getDouble(LINE_LENGTH);
+        double slacklinerWeight = valueBundle.getDouble(SLACKLINER_WEIGHT);
+        double pretension = valueBundle.getDouble(PRETENSION);
+
+        Webbing webbing = Webbing.getWebbingByName(webbingName);
+        if (webbing != null)
+            mBounceSimulations.setWebbing(webbing);
+        else {
+            mBounceSimulations.setWebbing(new Webbing(webbingName, new StretchBehavior(new StretchPoint(10e3, 0.01*webbingStretch))));
+        }
+        if (lineLength != 0)
+            mBounceSimulations.setLength(lineLength);
+        if (slacklinerWeight != 0)
+            mBounceSimulations.setWeight(slacklinerWeight);
+        if (pretension != 0)
+            mBounceSimulations.setPretension(pretension);
+
+        if(isResumed())
+        {
+            calculateAndDisplayDynamicForces();
+            updateTextFields();
+        }
+        //updateTextFields();
+        //calculateAndDisplayDynamicForces();
     }
 
     private void restoreParameters()

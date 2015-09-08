@@ -44,6 +44,8 @@
     <string name="back">back</string>
     <string name="stop">stop</string>
     <string name="custom">Custom</string>
+    <string name="copy_values">Copy Values</string>
+
     
     <string name="webbing">Webbing:</string>
     <string name="stretch_with_unit">Stretch [%/10kN]:</string>

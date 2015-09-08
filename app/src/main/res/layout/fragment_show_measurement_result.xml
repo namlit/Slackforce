@@ -36,6 +36,14 @@
             android:id="@+id/backToMeasurementButton"
             android:background="@android:drawable/btn_default" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/copy_values"
+            android:id="@+id/copyValuesButton"
+            android:layout_gravity="center"
+            android:background="@android:drawable/btn_default" />
+
         <Space
             android:layout_width="20px"
             android:layout_height="20px" />

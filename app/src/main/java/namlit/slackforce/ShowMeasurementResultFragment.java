@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -25,6 +26,8 @@ public class ShowMeasurementResultFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
 
+
+    private Button mCopyValuesButton;
     private double mPretension = 2;
     private double mTimeOfOscillation = 0;
     private OnFragmentInteractionListener mListener;
@@ -66,10 +69,18 @@ public class ShowMeasurementResultFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_show_measurement_result, container, false);
 
+        mCopyValuesButton = (Button) view.findViewById(R.id.copyValuesButton);
         TextView forceText = (TextView) view.findViewById(R.id.resultText);
         forceText.setText(String.format("The Pretension is %.2f kN", mPretension / 1e3));
         TextView oscillationTimeText = (TextView) view.findViewById(R.id.timeOfOscillationText);
         oscillationTimeText.setText(String.format("The measured time of oscillation is %.3f s", mTimeOfOscillation));
+
+        mCopyValuesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MeasureForceFragment) getParentFragment()).copyValues();
+            }
+        });
 
         return view;
     }

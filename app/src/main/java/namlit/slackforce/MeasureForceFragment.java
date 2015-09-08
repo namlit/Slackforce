@@ -41,6 +41,13 @@ public class MeasureForceFragment extends Fragment {
 
     static final int GET_WEBBING_REQUEST = 1;
 
+    static final String FRAGMENT_NAME = "FRAGMENT_NAME";
+    static final String MEASURE_FORCE_FRAGMENT = "MEASURE_FORCE_FRAGMENT";
+    static final String WEBBING_NAME = "WEBBING_NAME";
+    static final String WEBBING_STRETCH = "WEBBING_STRETCH";
+    static final String LINE_LENGTH = "LINE_LENGTH";
+    static final String PRETENSION = "PRETENSION";
+
     public enum Parameter
     {
         STRETCH, LINE_WEIGHT, LENGTH
@@ -53,8 +60,10 @@ public class MeasureForceFragment extends Fragment {
     private EditText mLength;
     private RadioButton mMeasureAutomaticallyButton;
     private RadioButton mMeasureManualButton;
+    private Button mCopyValuesButton = null;
 
     private boolean mIsMeasureAutomatically;
+    private double mPretension = 0;
 
     //private Parameter mParameterChanged = Parameter.LENGTH;
     //private Button mBackToMeasurementButton;
@@ -107,7 +116,6 @@ public class MeasureForceFragment extends Fragment {
         //mBackToMeasurementButton = (Button) view.findViewById(R.id.backToMeasurementButton);
 
         updateMeasureFragment();
-        updateTextFields();
 
         mMeasureAutomaticallyButton.setChecked(mIsMeasureAutomatically);
         mMeasureManualButton.setChecked(!mIsMeasureAutomatically);
@@ -191,6 +199,14 @@ public class MeasureForceFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateTextFields();
+    }
+
+
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -258,7 +274,7 @@ public class MeasureForceFragment extends Fragment {
 
     private void updateMeasureFragment()
     {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if(mIsMeasureAutomatically)
         {
@@ -278,15 +294,17 @@ public class MeasureForceFragment extends Fragment {
     {
         update();
 
-        double pretension = mSlacklineMeasurements.calculateForce(timeOfOscillation);
+        mPretension = mSlacklineMeasurements.calculateForce(timeOfOscillation);
 
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         ShowMeasurementResultFragment fragment = new ShowMeasurementResultFragment();
-        fragment.setPretension(pretension);
+        fragment.setPretension(mPretension);
         fragment.setmTimeOfOscillation(timeOfOscillation);
         fragmentTransaction.replace(R.id.measureFragmentContainer, fragment);
         fragmentTransaction.commit();
+
+        //mCopyValuesButton = (Button) fragment.getView().findViewById(R.id.copyValuesButton);
 
     }
 
@@ -328,12 +346,50 @@ public class MeasureForceFragment extends Fragment {
         }
     }
 
+    public void copyValues()
+    {
+        Bundle valueBundle = new Bundle();
+        valueBundle.putString(FRAGMENT_NAME, MEASURE_FORCE_FRAGMENT);
+        valueBundle.putString(WEBBING_NAME, mWebbingButton.getText().toString());
+        valueBundle.putDouble(WEBBING_STRETCH, Double.valueOf(mStretch.getText().toString()));
+        valueBundle.putDouble(LINE_LENGTH, Double.valueOf(mLength.getText().toString()));
+        valueBundle.putDouble(PRETENSION, mPretension);
+
+        ((MainActivity) getActivity()).pasteValuesToAllFragments(valueBundle);
+    }
+
+    public void pasteValues(Bundle valueBundle)
+    {
+        if (valueBundle.getString(FRAGMENT_NAME).equals(MEASURE_FORCE_FRAGMENT))
+            return;
+
+        String webbingName = valueBundle.getString(WEBBING_NAME);
+        double webbingStretch = valueBundle.getDouble(WEBBING_STRETCH);
+        double lineLength = valueBundle.getDouble(LINE_LENGTH);
+        double lineWeight = mSlacklineMeasurements.getWeightPerMeter();
+
+        Webbing webbing = Webbing.getWebbingByName(webbingName);
+        if (webbing != null)
+            mSlacklineMeasurements.setWebbing(webbing);
+        else {
+            mSlacklineMeasurements.setWebbing(new Webbing(webbingName, lineWeight, new StretchBehavior(new StretchPoint(10e3, 0.01*webbingStretch))));
+        }
+
+        if (lineLength != 0)
+            mSlacklineMeasurements.setLength(lineLength);
+
+        if (isResumed())
+        {
+            updateTextFields();
+        };
+    }
+
     private void restoreParameters()
     {
         Context context = getActivity();
         SharedPreferences sharedPreferences = context.getSharedPreferences(getString(R.string.measure_force_preference_key), Context.MODE_PRIVATE);
 
-        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), getString(R.string.custom));
+        String webbingName = sharedPreferences.getString(getString(R.string.preference_webbing_name), "White Magic");
         double stretch = sharedPreferences.getFloat(getString(R.string.preference_stretch_coefficient), (float) 1e-5);
         double weightPerMeter = sharedPreferences.getFloat(getString(R.string.preference_weight_per_meter), (float) 0.05);
         double length = sharedPreferences.getFloat(getString(R.string.preference_line_length), 50);
