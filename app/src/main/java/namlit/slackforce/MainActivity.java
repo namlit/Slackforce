@@ -30,7 +30,7 @@ import android.widget.TextView;
 
 import slacklib.*;
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, OnMeasurementResultListener{
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener{
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -232,12 +232,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
     }
 
-    @Override
-    public void onMeasurementResult(double timeOfOscillation)
-    {
-        MeasureForceFragment measurementFragment = (MeasureForceFragment) getSupportFragmentManager().findFragmentByTag(makeFragmentName(MEASURE_FORCE_POSITION));
-        measurementFragment.onMeasurementResult(timeOfOscillation);
-    }
 
     public void pasteValuesToAllFragments(Bundle values)
     {

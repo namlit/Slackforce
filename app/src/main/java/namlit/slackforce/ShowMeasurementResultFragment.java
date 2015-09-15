@@ -28,6 +28,7 @@ public class ShowMeasurementResultFragment extends Fragment {
 
 
     private Button mCopyValuesButton;
+    private Button mMeasureAgainButton;
     private double mPretension = 2;
     private double mTimeOfOscillation = 0;
     private OnFragmentInteractionListener mListener;
@@ -70,6 +71,7 @@ public class ShowMeasurementResultFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_show_measurement_result, container, false);
 
         mCopyValuesButton = (Button) view.findViewById(R.id.copyValuesButton);
+        mMeasureAgainButton = (Button) view.findViewById(R.id.measureAgainButton);
         TextView forceText = (TextView) view.findViewById(R.id.resultText);
         forceText.setText(String.format("The Pretension is %.2f kN", mPretension / 1e3));
         TextView oscillationTimeText = (TextView) view.findViewById(R.id.timeOfOscillationText);
@@ -79,6 +81,13 @@ public class ShowMeasurementResultFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((MeasureForceFragment) getParentFragment()).copyValues();
+            }
+        });
+
+        mMeasureAgainButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MeasureForceFragment) getParentFragment()).measureAgainButtonPressed();
             }
         });
 

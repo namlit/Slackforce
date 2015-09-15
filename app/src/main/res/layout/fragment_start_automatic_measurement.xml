@@ -14,8 +14,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/abort_measuring"
-            android:id="@+id/abortButton"
+            android:text="@string/start_measuring"
+            android:id="@+id/startButton"
             android:background="@android:drawable/btn_default" />
 
         <TextView
@@ -23,6 +23,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/statusText"
-            android:text="@string/measure_force_automatically__status_text_measuring" />
+            android:text="@string/measure_force_automatically__status_text_start_measurement" />
     </LinearLayout>
 </FrameLayout>

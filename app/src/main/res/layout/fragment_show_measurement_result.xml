@@ -33,7 +33,7 @@
             android:layout_gravity="center"
             android:text="@string/measure_again"
             android:onClick="measureAgainButtonPressed"
-            android:id="@+id/backToMeasurementButton"
+            android:id="@+id/measureAgainButton"
             android:background="@android:drawable/btn_default" />
 
         <Button

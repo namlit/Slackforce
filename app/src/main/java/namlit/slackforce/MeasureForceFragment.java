@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,9 +49,17 @@ public class MeasureForceFragment extends Fragment {
     static final String LINE_LENGTH = "LINE_LENGTH";
     static final String PRETENSION = "PRETENSION";
 
+    static final String FRAGMENT_STATE = "FRAGMENT_STATE";
+    static final String TIME_OF_OSCILLATION = "TIME_OF_OSCILLATION";
+
     public enum Parameter
     {
         STRETCH, LINE_WEIGHT, LENGTH
+    }
+
+    private enum FragmentState
+    {
+        AUTOMATIC_MEASUREMENT_IDLE, AUTOMATIC_MEASUREMENT_RUNNING, MANUAL_MEASUREMENT_RUNNING, SHOW_MEASUREMENT_RESULT,
     }
 
     private OnFragmentInteractionListener mListener;
@@ -60,10 +69,10 @@ public class MeasureForceFragment extends Fragment {
     private EditText mLength;
     private RadioButton mMeasureAutomaticallyButton;
     private RadioButton mMeasureManualButton;
-    private Button mCopyValuesButton = null;
 
-    private boolean mIsMeasureAutomatically;
+    private FragmentState mFragmentState = FragmentState.AUTOMATIC_MEASUREMENT_IDLE;
     private double mPretension = 0;
+    private double mTimeOfOscillation = 0;
 
     //private Parameter mParameterChanged = Parameter.LENGTH;
     //private Button mBackToMeasurementButton;
@@ -93,11 +102,17 @@ public class MeasureForceFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
-        mSlacklineMeasurements = new SlacklineMeasurements();
 
+        mSlacklineMeasurements = new SlacklineMeasurements();
         restoreParameters();
+
+        if (savedInstanceState != null) {
+            mFragmentState = (FragmentState) savedInstanceState.getSerializable(FRAGMENT_STATE);
+            mPretension = savedInstanceState.getDouble(PRETENSION, 0);
+            mTimeOfOscillation = savedInstanceState.getDouble(TIME_OF_OSCILLATION, 0);
+        }
+
+
     }
 
     @Override
@@ -115,25 +130,26 @@ public class MeasureForceFragment extends Fragment {
         mMeasureManualButton = (RadioButton) view.findViewById(R.id.manualButton);
         //mBackToMeasurementButton = (Button) view.findViewById(R.id.backToMeasurementButton);
 
-        updateMeasureFragment();
+        if( (mFragmentState == FragmentState.MANUAL_MEASUREMENT_RUNNING) && !mMeasureManualButton.isChecked() ) {
+            mMeasureManualButton.setChecked(true);
+            mMeasureAutomaticallyButton.setChecked(false);
+        }
 
-        mMeasureAutomaticallyButton.setChecked(mIsMeasureAutomatically);
-        mMeasureManualButton.setChecked(!mIsMeasureAutomatically);
-
-        mMeasureAutomaticallyButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mMeasureAutomaticallyButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mIsMeasureAutomatically = isChecked;
+            public void onClick(View v) {
+                mFragmentState = FragmentState.AUTOMATIC_MEASUREMENT_IDLE;
                 updateMeasureFragment();
             }
         });
 
-//        mMeasureManualButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                updateMeasureFragment();
-//            }
-//        });
+        mMeasureManualButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFragmentState = FragmentState.MANUAL_MEASUREMENT_RUNNING;
+                updateMeasureFragment();
+            }
+        });
 
         mWebbingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -202,6 +218,7 @@ public class MeasureForceFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        updateMeasureFragment();
         updateTextFields();
     }
 
@@ -237,7 +254,15 @@ public class MeasureForceFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
 
+        savedInstanceState.putSerializable(FRAGMENT_STATE, mFragmentState);
+        savedInstanceState.putDouble(PRETENSION, mPretension);
+        savedInstanceState.putDouble(TIME_OF_OSCILLATION, mTimeOfOscillation);
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -276,18 +301,31 @@ public class MeasureForceFragment extends Fragment {
     {
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        if(mIsMeasureAutomatically)
+        Fragment fragment = null;
+        switch (mFragmentState)
         {
-            MeasureForceAutomaticallyFragment fragment = new MeasureForceAutomaticallyFragment();
-            //fragment.setRetainInstance(true);
-            fragmentTransaction.replace(R.id.measureFragmentContainer, fragment);
+            case AUTOMATIC_MEASUREMENT_IDLE:
+                fragment = new StartAutomaticMeasurementFragment();
+                fragmentTransaction.replace(R.id.measureFragmentContainer, fragment);
+                break;
+            case AUTOMATIC_MEASUREMENT_RUNNING:
+                fragment = new MeasureForceAutomaticallyFragment();
+                fragmentTransaction.replace(R.id.measureFragmentContainer, fragment);
+                break;
+            case MANUAL_MEASUREMENT_RUNNING:
+                fragment = new MeasureForceManualFragment();
+                fragmentTransaction.replace(R.id.measureFragmentContainer, fragment);
+                break;
+            case SHOW_MEASUREMENT_RESULT:
+                fragment = new ShowMeasurementResultFragment();
+                ((ShowMeasurementResultFragment)fragment).setPretension(mPretension);
+                ((ShowMeasurementResultFragment)fragment).setmTimeOfOscillation(mTimeOfOscillation);
+                fragmentTransaction.replace(R.id.measureFragmentContainer, fragment);
+                break;
+            default:
+                return;
         }
-        else
-        {
-            MeasureForceManualFragment fragment = new MeasureForceManualFragment();
-            //fragment.setRetainInstance(true);
-            fragmentTransaction.replace(R.id.measureFragmentContainer, fragment);
-        }
+
         fragmentTransaction.commit();
     }
     public void onMeasurementResult(double timeOfOscillation)
@@ -295,21 +333,29 @@ public class MeasureForceFragment extends Fragment {
         update();
 
         mPretension = mSlacklineMeasurements.calculateForce(timeOfOscillation);
+        mTimeOfOscillation = timeOfOscillation;
+        mFragmentState = FragmentState.SHOW_MEASUREMENT_RESULT;
+        updateMeasureFragment();
+    }
 
-        FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        ShowMeasurementResultFragment fragment = new ShowMeasurementResultFragment();
-        fragment.setPretension(mPretension);
-        fragment.setmTimeOfOscillation(timeOfOscillation);
-        fragmentTransaction.replace(R.id.measureFragmentContainer, fragment);
-        fragmentTransaction.commit();
+    public void abortAutomaticMeasurement()
+    {
+        mFragmentState = FragmentState.AUTOMATIC_MEASUREMENT_IDLE;
+        updateMeasureFragment();
+    }
 
-        //mCopyValuesButton = (Button) fragment.getView().findViewById(R.id.copyValuesButton);
-
+    public void startAutomaticMeasurement()
+    {
+        mFragmentState = FragmentState.AUTOMATIC_MEASUREMENT_RUNNING;
+        updateMeasureFragment();
     }
 
     public void measureAgainButtonPressed()
     {
+        if(mMeasureAutomaticallyButton.isChecked())
+            mFragmentState = FragmentState.AUTOMATIC_MEASUREMENT_RUNNING;
+        else
+        mFragmentState = FragmentState.MANUAL_MEASUREMENT_RUNNING;
         updateMeasureFragment();
     }
 
@@ -402,7 +448,12 @@ public class MeasureForceFragment extends Fragment {
             mSlacklineMeasurements.setWebbing(new Webbing(webbingName, weightPerMeter, new StretchBehavior(new StretchPoint(30e3, 3*stretch*1e4))));
         }
         mSlacklineMeasurements.setLength(length);
-        mIsMeasureAutomatically = isAutomaticMeasurement;
+
+        if (isAutomaticMeasurement)
+            mFragmentState = FragmentState.AUTOMATIC_MEASUREMENT_IDLE;
+        else
+            mFragmentState = FragmentState.MANUAL_MEASUREMENT_RUNNING;
+        //mIsMeasureAutomatically = isAutomaticMeasurement;
     }
 
     private void saveParameters()
@@ -415,13 +466,13 @@ public class MeasureForceFragment extends Fragment {
         double stretch = mSlacklineMeasurements.getStretchCoefficient();
         double weightPerMeter = mSlacklineMeasurements.getWeightPerMeter();
         double length = mSlacklineMeasurements.getLength();
-        //boolean isAutomaticMeasurement =
+        boolean isMeasureAutomatically = mMeasureAutomaticallyButton.isChecked();
 
         editor.putString(getString(R.string.preference_webbing_name), webbingName);
         editor.putFloat(getString(R.string.preference_stretch_coefficient), (float) stretch);
         editor.putFloat(getString(R.string.preference_weight_per_meter), (float) weightPerMeter);
         editor.putFloat(getString(R.string.preference_line_length), (float) length);
-        editor.putBoolean(getString(R.string.preference_is_automatic_measurement), mIsMeasureAutomatically);
+        editor.putBoolean(getString(R.string.preference_is_automatic_measurement), isMeasureAutomatically);
 
         editor.commit();
 
