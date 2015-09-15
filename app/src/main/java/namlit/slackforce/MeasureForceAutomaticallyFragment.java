@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import slacklib.SlacklineSoundAudioProcessor;
 
@@ -73,7 +74,7 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
         mAbortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MeasureForceFragment) getParentFragment()).abortAutomaticMeasurement();
+                abortMeasurement();
             }
         });
 
@@ -91,8 +92,6 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
     }
-
-
 
 
 
@@ -120,6 +119,7 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
     public void onDestroy()
     {
         super.onDestroy();
+        freeAudioResources();
     }
 
 
@@ -138,52 +138,69 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
                 int numberOfShortsWritten = 0;
 
 
-                    try {
+                try {
 
-                        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-                        final int bufferSize = AudioRecord.getMinBufferSize(mFrameRate,
-                                AudioFormat.CHANNEL_IN_MONO,
-                                AudioFormat.ENCODING_PCM_16BIT);
-
-
-                        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, mFrameRate,
-                                AudioFormat.CHANNEL_IN_MONO,
-                                AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+                    android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+                    final int bufferSize = AudioRecord.getMinBufferSize(mFrameRate,
+                            AudioFormat.CHANNEL_IN_MONO,
+                            AudioFormat.ENCODING_PCM_16BIT);
 
 
 
-                        final short[] buffer = new short[bufferSize];
-                        mAudioRecord.startRecording();
-
-
-                        do  {
-                        numberOfShortsWritten = mAudioRecord.read(buffer, 0, bufferSize);
-
-                        } while (!mAudioProcessor.process(buffer, 0, numberOfShortsWritten));
+                    mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, mFrameRate,
+                            AudioFormat.CHANNEL_IN_MONO,
+                            AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 
 
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ((MeasureForceFragment) getParentFragment()).onMeasurementResult(mAudioProcessor.getTimeOfOscillation());
-                        }
-                    });
+                    final short[] buffer = new short[bufferSize];
+                    mAudioRecord.startRecording();
 
-                    } catch (Throwable t) {
-                        //todo display error to user
-                        t.printStackTrace();
+
+                    do  {
+                    numberOfShortsWritten = mAudioRecord.read(buffer, 0, bufferSize);
+
+                    } while (!mAudioProcessor.process(buffer, 0, numberOfShortsWritten));
+
+
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((MeasureForceFragment) getParentFragment()).onMeasurementResult(mAudioProcessor.getTimeOfOscillation());
                     }
+                });
+
+                } catch (Throwable t) {
+
+                    //Toast.makeText(getActivity(), getString(R.string.audio_resource_error), Toast.LENGTH_LONG).show();
+                    //abortMeasurement();
+                    t.printStackTrace();
+                }
+
+                finally {
+                    freeAudioResources();
+                }
 
             }
         });
+
+
         mAudioThread.start();
 
 
     }
 
+    private void abortMeasurement()
+    {
+        ((MeasureForceFragment) getParentFragment()).abortAutomaticMeasurement();
+    }
+
     private void freeAudioResources()
     {
+        if (mAudioThread != null)
+            mAudioThread.interrupt();
+
         if (mAudioRecord != null)
         {
             //mAudioRecord.stop();
@@ -192,7 +209,5 @@ public class MeasureForceAutomaticallyFragment extends Fragment {
         }
         if (mAudioProcessor != null)
             mAudioProcessor.reset();
-        if (mAudioThread != null)
-            mAudioThread.interrupt();
     }
 }
