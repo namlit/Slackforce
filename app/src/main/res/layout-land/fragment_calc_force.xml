@@ -146,31 +146,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_column="0" />
-
-                <Space
+                <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="1" />
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_column="0"
+                    android:layout_span="2"
                     android:layout_weight="1"
-                    android:layout_column="2" />
+                    android:text="@string/choose_parameter"
+                    android:id="@+id/chooseParameterButton"
+                    android:background="@android:drawable/btn_default"
+                    android:layout_marginTop="10dp" />
+
+
 
                 <Button
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_column="3"
+                    android:layout_span="2"
+                    android:layout_weight="1"
                     android:text="@string/copy_values"
                     android:id="@+id/copyValuesButton"
-                    android:layout_column="3"
                     android:layout_marginTop="10dp"
-                    android:background="@android:drawable/btn_default" />
+                    android:background="@android:drawable/btn_default"/>
             </TableRow>
 
 

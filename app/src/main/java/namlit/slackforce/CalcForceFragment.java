@@ -70,6 +70,7 @@ public class CalcForceFragment extends Fragment {
     private EditText mForce;
     private EditText mPretension;
     private EditText mSagWithoutSlacker;
+    private Button mChooseParameterButton;
     private Button mCopyValuesButton;
 
     /**
@@ -119,6 +120,7 @@ public class CalcForceFragment extends Fragment {
         mForce = (EditText) view.findViewById(R.id.force);
         mPretension = (EditText) view.findViewById(R.id.pretension);
         mSagWithoutSlacker = (EditText) view.findViewById(R.id.sagWithoutSlacker);
+        mChooseParameterButton = (Button) view.findViewById(R.id.chooseParameterButton);
         mCopyValuesButton = (Button) view.findViewById(R.id.copyValuesButton);
 
 
@@ -136,8 +138,12 @@ public class CalcForceFragment extends Fragment {
         mStretch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                mParameterChanged = Parameter.STRETCH;
-                update();
+
+                double stretchCoeff = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
+                if (Math.abs(mSlackineCalculations.getStretchCoefficient() - stretchCoeff) > 5e-9) {
+                    mParameterChanged = Parameter.STRETCH;
+                    update();
+                }
                 return true;
             }
         });
@@ -145,8 +151,12 @@ public class CalcForceFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    mParameterChanged = Parameter.STRETCH;
-                    update();
+
+                    double stretchCoeff = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
+                    if (Math.abs(mSlackineCalculations.getStretchCoefficient() - stretchCoeff) > 5e-9) {
+                        mParameterChanged = Parameter.STRETCH;
+                        update();
+                    }
                 }
             }
         });
@@ -154,8 +164,10 @@ public class CalcForceFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-                mParameterChanged = Parameter.LENGTH;
-                update();
+                if (Math.abs(mSlackineCalculations.getLength() - Double.valueOf(mLength.getText().toString())) > 0.05) {
+                    mParameterChanged = Parameter.LENGTH;
+                    update();
+                }
                 return true;
             }
         });
@@ -163,8 +175,10 @@ public class CalcForceFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    mParameterChanged = Parameter.LENGTH;
-                    update();
+                    if (Math.abs(mSlackineCalculations.getLength() - Double.valueOf(mLength.getText().toString())) > 0.05) {
+                        mParameterChanged = Parameter.LENGTH;
+                        update();
+                    }
                 }
             }
         });
@@ -172,8 +186,10 @@ public class CalcForceFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-                mParameterChanged = Parameter.SAG;
-                update();
+                if (Math.abs(mSlackineCalculations.getSag() - Double.valueOf(mSag.getText().toString())) > 0.005) {
+                    mParameterChanged = Parameter.SAG;
+                    update();
+                }
                 return true;
             }
         });
@@ -181,8 +197,10 @@ public class CalcForceFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    mParameterChanged = Parameter.SAG;
-                    update();
+                    if (Math.abs(mSlackineCalculations.getSag() - Double.valueOf(mSag.getText().toString())) > 0.005) {
+                        mParameterChanged = Parameter.SAG;
+                        update();
+                    }
                 }
             }
         });
@@ -190,8 +208,10 @@ public class CalcForceFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-                mParameterChanged = Parameter.WEIGHT;
-                update();
+                if (Math.abs(mSlackineCalculations.getWeightOfSlackliner() - Double.valueOf(mWeight.getText().toString())) > 0.05) {
+                    mParameterChanged = Parameter.WEIGHT;
+                    update();
+                }
                 return true;
             }
         });
@@ -199,8 +219,11 @@ public class CalcForceFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    mParameterChanged = Parameter.WEIGHT;
-                    update();
+
+                    if (Math.abs(mSlackineCalculations.getWeightOfSlackliner() - Double.valueOf(mWeight.getText().toString())) > 0.05) {
+                        mParameterChanged = Parameter.WEIGHT;
+                        update();
+                    }
                 }
             }
         });
@@ -208,9 +231,10 @@ public class CalcForceFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-
-                mParameterChanged = Parameter.FORCE;
-                update();
+                if (Math.abs(mSlackineCalculations.getAnchorForce() - Double.valueOf(mForce.getText().toString())) > 0.005) {
+                    mParameterChanged = Parameter.FORCE;
+                    update();
+                }
                 return true;
             }
         });
@@ -218,8 +242,11 @@ public class CalcForceFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    mParameterChanged = Parameter.FORCE;
-                    update();
+
+                    if (Math.abs(mSlackineCalculations.getAnchorForce() - Double.valueOf(mForce.getText().toString())) > 0.005) {
+                        mParameterChanged = Parameter.FORCE;
+                        update();
+                    }
                 }
             }
         });
@@ -227,8 +254,10 @@ public class CalcForceFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-                mParameterChanged = Parameter.PRETENSION;
-                update();
+                if (Math.abs(mSlackineCalculations.getPretension() - Double.valueOf(mPretension.getText().toString())) > 0.005) {
+                    mParameterChanged = Parameter.PRETENSION;
+                    update();
+                }
                 return true;
             }
         });
@@ -236,8 +265,11 @@ public class CalcForceFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    mParameterChanged = Parameter.PRETENSION;
-                    update();
+
+                    if (Math.abs(mSlackineCalculations.getPretension() - Double.valueOf(mPretension.getText().toString())) > 0.005) {
+                        mParameterChanged = Parameter.PRETENSION;
+                        update();
+                    }
                 }
             }
         });
@@ -245,8 +277,10 @@ public class CalcForceFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-                mParameterChanged = Parameter.SAGWITHOUTSLACKER;
-                update();
+                if (Math.abs(mSlackineCalculations.getSagWithoutSlacker() - Double.valueOf(mSagWithoutSlacker.getText().toString())) > 0.005) {
+                    mParameterChanged = Parameter.SAGWITHOUTSLACKER;
+                    update();
+                }
                 return true;
             }
         });
@@ -254,11 +288,21 @@ public class CalcForceFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    mParameterChanged = Parameter.SAGWITHOUTSLACKER;
-                    update();
+
+                    if (Math.abs(mSlackineCalculations.getSagWithoutSlacker() - Double.valueOf(mSagWithoutSlacker.getText().toString())) > 0.005) {
+                        mParameterChanged = Parameter.SAGWITHOUTSLACKER;
+                        update();
+                    }
                 }
             }
         });
+        mChooseParameterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectParameterToCalculate();
+            }
+        });
+
         mCopyValuesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -363,7 +407,6 @@ public class CalcForceFragment extends Fragment {
             switch (mParameterChanged) {
                 case STRETCH:
                     double stretchCoeff = Double.valueOf(mStretch.getText().toString()) * 1e-6; // unit at textfield is %/10kN
-                    if (Math.abs(mSlackineCalculations.getStretchCoefficient() - stretchCoeff) > 5e-9 )
                         mSlackineCalculations.setWebbing(new Webbing(getString(R.string.custom), new StretchBehavior(new StretchPoint(30e3, 3* stretchCoeff *1e4))));
                     break;
 
@@ -425,17 +468,12 @@ public class CalcForceFragment extends Fragment {
                 mSlackineCalculations.calculateWeight();
                 break;
         }
+        mSlackineCalculations.calculatePretension();
     }
 
     private void update()
     {
         readInputField();
-        if(mParameterToCalculate == mParameterChanged ||
-                (mParameterToCalculate == Parameter.FORCE && (mParameterChanged == Parameter.PRETENSION || mParameterChanged == Parameter.SAGWITHOUTSLACKER)))
-        {
-            selectParameterToCalculate();
-            return;
-        }
         updateCalculations();
         updateAllTextFields();
     }

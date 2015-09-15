@@ -152,6 +152,7 @@
 
 
     <string name="choose_parameter_title">Choose Parameter to Calculate</string>
+    <string name="choose_parameter">Choose Parameter</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
