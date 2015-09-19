@@ -170,6 +170,22 @@ public class Webbing
 		return mStretchBehavior.getStretch(10e3) / 10e3;
 	}
 
+	public double getLinearSolidModelStretchCoefficient1()
+	{
+		return (1. / 4.) * getStretchCoefficient();
+	}
+
+	public double getLinearSolidModelStretchCoefficient2()
+	{
+		return (3. / 4.) * getStretchCoefficient();
+	}
+
+	public double getLinearSolidModelDampingFactor()
+	{
+		return 5000;
+	}
+
+
 	public double getForce(double knownForce, double relativeChangeInLength)
 	{
 		return mStretchBehavior.getForce(knownForce, relativeChangeInLength);

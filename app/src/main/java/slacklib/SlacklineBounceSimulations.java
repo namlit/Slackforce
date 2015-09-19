@@ -1,14 +1,21 @@
 package slacklib;
 
 import java.io.*;
+import static java.lang.System.out;
 
 public class SlacklineBounceSimulations {
 	private final double gravityAcceleration = 9.81;
 
 	private SlacklineCalculations mSlackCalc;
+    private Webbing mWebbing;
 	private double mSpeedOfSlackliner; // direction downwards
 	private double mVerticalPositionOfSlackliner; // corresponds to -sag of slackline for positive values
 	private double mDeltaT = 0.0001;
+
+    private final SagDerivative mSagDerivative = new SagDerivative();
+    private final SpeedDerivative mSpeedDerivative = new SpeedDerivative();
+    private final AccelerationDerivative mAccelerationDerivative = new AccelerationDerivative();
+
 	/*
 	 * mDeltaT:
 	 * Test: 30s simalation, length=50m, sag=2m, weight=80kg, heightOfFall=1m, Webbing=sonic2.0
@@ -19,12 +26,13 @@ public class SlacklineBounceSimulations {
 	 */
 
 	public SlacklineBounceSimulations() {
-		mSlackCalc = new SlacklineCalculations();
+		this(new SlacklineCalculations());
 		//mDeltaT = 0.001;
 	}
 
 	public SlacklineBounceSimulations(SlacklineCalculations slackCalc) {
 		this.mSlackCalc = slackCalc;
+        this.mWebbing = new Webbing();
 		//mDeltaT = 0.001;
 	}
 
@@ -180,7 +188,7 @@ public class SlacklineBounceSimulations {
 
 	public String getWebbingName()
 	{
-		return mSlackCalc.getWebbingName();
+		return mWebbing.getName();
 	}
 
 	public double getLength()
@@ -222,9 +230,145 @@ public class SlacklineBounceSimulations {
 
 	public void setWebbing(Webbing webbing)
 	{
+        mWebbing = webbing;
 		mSlackCalc.setWebbing(webbing);
 	}
 
+
+	interface RungeKuttaFunction
+	{
+		public double getFunctionValue(double s, double v, double a);
+	}
+	
+	class SagDerivative implements RungeKuttaFunction
+	{
+		@Override
+		public double getFunctionValue(double s, double v, double a)
+		{
+			return v;
+		}
+	}
+
+	class SpeedDerivative implements RungeKuttaFunction
+	{
+		@Override
+		public double getFunctionValue(double s, double v, double a)
+		{
+			return a;
+		}
+	}
+
+	class AccelerationDerivative implements RungeKuttaFunction
+	{
+		@Override
+		public double getFunctionValue(double s, double v, double a)
+		{
+			double l = getLength();
+			double m = getWeight();
+			double stretchCoefficient = getStretchCoefficient();
+			double alpha1 = mWebbing.getLinearSolidModelStretchCoefficient1();
+			double alpha2 = mWebbing.getLinearSolidModelStretchCoefficient2();
+			double c1 = 1 / (alpha1 * (l/2) );
+			double c2 = 1 / (alpha2 * (l/2) );
+			double d = mWebbing.getLinearSolidModelDampingFactor() / (l/2);
+			double g = gravityAcceleration;
+			double F0 = getPretension();
+			double deltaL0 = stretchCoefficient * F0 * l;
+			double l1 = Math.sqrt(s * s + l*l/4);
+
+
+			return (   (c1+c2)*(g-a)/d +
+					2*s*v*(g-a)*(1/(2*l1)-l1/(s*s)) / l1 -
+					2*s*c1*c2*((deltaL0/2)-(l/2)+l1) / (d*m*l1) -
+					2*s*s*v*c1 / (m*l1*l1) );
+		}
+	}
+
+
+	public void rungeKuttaIteration(double s0, double v0, double a0, double deltaT, double simulationTime)
+	{
+		
+		double s = s0;
+		double v = v0;
+		double a = a0;
+		double t = 0;
+		
+		double l = getLength();
+		double m = getWeight();
+		double l1 = Math.sqrt(s * s + l*l/4);
+		
+		double fv = m * (gravityAcceleration - a);
+		double gfactor = (gravityAcceleration - a) / gravityAcceleration;
+		double fa = l1 * fv / (2*s);
+
+
+		Writer csvFile = null;
+		String filename = "simulation.csv";
+
+		try {
+			csvFile = new FileWriter(filename);
+
+			boolean alreadyprinted = false;
+
+			for (int i = 0; i < simulationTime/deltaT; i++)
+			{
+				double m1 = mSagDerivative.getFunctionValue(s, v, a);
+				double n1 = mSpeedDerivative.getFunctionValue(s, v, a);
+				double o1 = mAccelerationDerivative.getFunctionValue(s, v, a);
+
+				double m2 = mSagDerivative.getFunctionValue(s + 0.5*deltaT*m1, v + 0.5*deltaT*n1, a + 0.5*deltaT*o1);
+				double n2 = mSpeedDerivative.getFunctionValue(s + 0.5*deltaT*m1, v + 0.5*deltaT*n1, a + 0.5*deltaT*o1);
+				double o2 = mAccelerationDerivative.getFunctionValue(s + 0.5*deltaT*m1, v + 0.5*deltaT*n1, a + 0.5*deltaT*o1);
+
+				double m3 = mSagDerivative.getFunctionValue(s + 0.5*deltaT*m2, v + 0.5*deltaT*n2, a + 0.5*deltaT*o2);
+				double n3 = mSpeedDerivative.getFunctionValue(s + 0.5*deltaT*m2, v + 0.5*deltaT*n2, a + 0.5*deltaT*o2);
+				double o3 = mAccelerationDerivative.getFunctionValue(s + 0.5*deltaT*m2, v + 0.5*deltaT*n2, a + 0.5*deltaT*o2);
+	
+				double m4 = mSagDerivative.getFunctionValue(s + deltaT*m3, v + deltaT*n3, a + deltaT*o3);
+				double n4 = mSpeedDerivative.getFunctionValue(s + deltaT*m3, v + deltaT*n3, a + deltaT*o3);
+				double o4 = mAccelerationDerivative.getFunctionValue(s + deltaT*m3, v + deltaT*n3, a + deltaT*o3);
+
+				double deltaS = (1./6.) * deltaT * (m1 + 2*m2 + 2*m3 + m4);
+				double deltaV = (1./6.) * deltaT * (n1 + 2*n2 + 2*n3 + n4);
+				double deltaA = (1./6.) * deltaT * (o1 + 2*o2 + 2*o3 + o4);
+				
+				
+				
+				s += deltaS;
+				v += deltaV;
+				a += deltaA;
+				t += deltaT;
+				
+				l1 = Math.sqrt(s * s + l*l/4);
+				fv = m * (gravityAcceleration - a);
+				gfactor = (gravityAcceleration - a) / gravityAcceleration;
+				fa = l1 * fv / (2*s);
+
+				csvFile.append(t + "," + s + "," + v + "," + a + "," + fv + "," + gfactor + "," + fa + "\n");
+
+				
+				if (deltaS <= 0 && !alreadyprinted)
+				{
+					out.printf("g-factor:\t\t%.5f\n", gfactor);
+					out.printf("max. slacker force:\t%.5f kN\n", fv/1e3);
+					out.printf("max. line force:\t%.5f kN\n", fa/1e3);
+					out.printf("max. sag:\t\t%.5f m\n", s);
+					alreadyprinted = true;
+				}
+				
+			}
+
+		} catch (IOException e) {
+			System.err.println("Konnte Datei nicht erstellen");
+		} finally {
+			if (csvFile != null)
+				try {
+					csvFile.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+	}
 
 
 //	private SlacklineCalculations getSlackCalc()
