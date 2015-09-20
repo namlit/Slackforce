@@ -1,7 +1,6 @@
 package slacklib;
 
 import java.io.*;
-import static java.lang.System.out;
 
 public class SlacklineBounceSimulations {
 	private final double gravityAcceleration = 9.81;
@@ -10,7 +9,9 @@ public class SlacklineBounceSimulations {
     private Webbing mWebbing;
 	private double mSpeedOfSlackliner; // direction downwards
 	private double mVerticalPositionOfSlackliner; // corresponds to -sag of slackline for positive values
-	private double mDeltaT = 0.0001;
+	private double mDeltaT = 0.001;
+
+	private double s, v, a, t, l, l1, m, fv, gFactor, fa, deltaS, deltaV, deltaA;
 
     private final SagDerivative mSagDerivative = new SagDerivative();
     private final SpeedDerivative mSpeedDerivative = new SpeedDerivative();
@@ -99,33 +100,32 @@ public class SlacklineBounceSimulations {
 	 */
 	public double calculateHeightOfFallFromStandingReference(double heightOfBounce)
 	{
-		mSlackCalc.updateVerticalForceFromWeight();
 		double sag = mSlackCalc.calculateSag();
-		return heightOfBounce - sag;
+		return sag - heightOfBounce;
 	}
 
-	public void simulateBouncing(double heightOfFall, double simulationTime) {
-
-		double time[] = new double[(int) (simulationTime / mDeltaT) + 1];
-		double verticalPos[] = new double[(int) (simulationTime / mDeltaT) + 1];
-		double anchorForce[] = new double[(int) (simulationTime / mDeltaT) + 1];
-		double verticalForce[] = new double[(int) (simulationTime / mDeltaT) + 1];
-
-		mVerticalPositionOfSlackliner = heightOfFall;
-		mSpeedOfSlackliner = 0;
-
-		int i = 0;
-		for (double currentTime = 0; currentTime < simulationTime; currentTime += mDeltaT, i++) {
-			iterationStep();
-			time[i] = currentTime;
-			verticalPos[i] = mVerticalPositionOfSlackliner;
-			anchorForce[i] = mSlackCalc.getAnchorForce(); //calculateAnchorForce?
-			verticalForce[i] = mSlackCalc.getVerticalForce();
-
-			//out.printf("Time, Pos, Fv, Fh:\t%.3f\t%.3f\t%.0f\t%.0f\n", currentTime, mVerticalPositionOfSlackliner, mSlackCalc.getVerticalForce(), mSlackCalc.getAnchorForce());
-		}
-		writeSimulationResultToCSVFile(time, verticalPos, anchorForce, verticalForce, "simulation.csv");
-	}
+//	public void simulateBouncing(double heightOfFall, double simulationTime) {
+//
+//		double time[] = new double[(int) (simulationTime / mDeltaT) + 1];
+//		double verticalPos[] = new double[(int) (simulationTime / mDeltaT) + 1];
+//		double anchorForce[] = new double[(int) (simulationTime / mDeltaT) + 1];
+//		double verticalForce[] = new double[(int) (simulationTime / mDeltaT) + 1];
+//
+//		mVerticalPositionOfSlackliner = heightOfFall;
+//		mSpeedOfSlackliner = 0;
+//
+//		int i = 0;
+//		for (double currentTime = 0; currentTime < simulationTime; currentTime += mDeltaT, i++) {
+//			iterationStep();
+//			time[i] = currentTime;
+//			verticalPos[i] = mVerticalPositionOfSlackliner;
+//			anchorForce[i] = mSlackCalc.getAnchorForce(); //calculateAnchorForce?
+//			verticalForce[i] = mSlackCalc.getVerticalForce();
+//
+//			//out.printf("Time, Pos, Fv, Fh:\time%.3f\time%.3f\time%.0f\time%.0f\n", currentTime, mVerticalPositionOfSlackliner, mSlackCalc.getVerticalForce(), mSlackCalc.getAnchorForce());
+//		}
+//		writeSimulationResultToCSVFile(time, verticalPos, anchorForce, verticalForce, "simulation.csv");
+//	}
 
 	private void writeSimulationResultToCSVFile(double time[], double verticalPos[], double anchorForce[],
 												double verticalForce[], String filename) {
@@ -235,12 +235,12 @@ public class SlacklineBounceSimulations {
 	}
 
 
-	interface RungeKuttaFunction
+	private interface RungeKuttaFunction
 	{
-		public double getFunctionValue(double s, double v, double a);
+		double getFunctionValue(double s, double v, double a);
 	}
-	
-	class SagDerivative implements RungeKuttaFunction
+
+	private class SagDerivative implements RungeKuttaFunction
 	{
 		@Override
 		public double getFunctionValue(double s, double v, double a)
@@ -249,7 +249,7 @@ public class SlacklineBounceSimulations {
 		}
 	}
 
-	class SpeedDerivative implements RungeKuttaFunction
+	private class SpeedDerivative implements RungeKuttaFunction
 	{
 		@Override
 		public double getFunctionValue(double s, double v, double a)
@@ -258,13 +258,14 @@ public class SlacklineBounceSimulations {
 		}
 	}
 
-	class AccelerationDerivative implements RungeKuttaFunction
+	private class AccelerationDerivative implements RungeKuttaFunction
 	{
 		@Override
-		public double getFunctionValue(double s, double v, double a)
+		public double getFunctionValue(double s, double v, double a) throws IllegalArgumentException
 		{
 			double l = getLength();
 			double m = getWeight();
+			double initialSag = getInitialSag();
 			double stretchCoefficient = getStretchCoefficient();
 			double alpha1 = mWebbing.getLinearSolidModelStretchCoefficient1();
 			double alpha2 = mWebbing.getLinearSolidModelStretchCoefficient2();
@@ -274,88 +275,180 @@ public class SlacklineBounceSimulations {
 			double g = gravityAcceleration;
 			double F0 = getPretension();
 			double deltaL0 = stretchCoefficient * F0 * l;
+			double l0 = Math.sqrt(initialSag * initialSag + l*l/4);
 			double l1 = Math.sqrt(s * s + l*l/4);
 
-
+			if(l <= 0 || m <= 0 || alpha1 <= 0 || alpha2 <= 0 || d <= 0)
+				throw new IllegalArgumentException("Illegal parameter value in dynamic simulation");
+			
+			if(s == 0)
+				return 0;
+			
 			return (   (c1+c2)*(g-a)/d +
 					2*s*v*(g-a)*(1/(2*l1)-l1/(s*s)) / l1 -
-					2*s*c1*c2*((deltaL0/2)-(l/2)+l1) / (d*m*l1) -
+					2*s*c1*c2*((deltaL0/2)-l0+l1) / (d*m*l1) -
 					2*s*s*v*c1 / (m*l1*l1) );
 		}
 	}
 
-
-	public void rungeKuttaIteration(double s0, double v0, double a0, double deltaT, double simulationTime)
+	private void rungeKuttaIterationStep()
 	{
-		
-		double s = s0;
-		double v = v0;
-		double a = a0;
-		double t = 0;
-		
-		double l = getLength();
-		double m = getWeight();
-		double l1 = Math.sqrt(s * s + l*l/4);
-		
-		double fv = m * (gravityAcceleration - a);
-		double gfactor = (gravityAcceleration - a) / gravityAcceleration;
-		double fa = l1 * fv / (2*s);
+		if(s+deltaS <= 0)
+		{
+			freeFallIterationStep();
+			return;
+		}
 
+		double m1 = mSagDerivative.getFunctionValue(s, v, a);
+		double n1 = mSpeedDerivative.getFunctionValue(s, v, a);
+		double o1 = mAccelerationDerivative.getFunctionValue(s, v, a);
+
+		double m2 = mSagDerivative.getFunctionValue(s + 0.5* mDeltaT *m1, v + 0.5* mDeltaT *n1, a + 0.5* mDeltaT *o1);
+		double n2 = mSpeedDerivative.getFunctionValue(s + 0.5* mDeltaT *m1, v + 0.5* mDeltaT *n1, a + 0.5* mDeltaT *o1);
+		double o2 = mAccelerationDerivative.getFunctionValue(s + 0.5* mDeltaT *m1, v + 0.5* mDeltaT *n1, a + 0.5* mDeltaT *o1);
+
+		double m3 = mSagDerivative.getFunctionValue(s + 0.5* mDeltaT *m2, v + 0.5* mDeltaT *n2, a + 0.5* mDeltaT *o2);
+		double n3 = mSpeedDerivative.getFunctionValue(s + 0.5* mDeltaT *m2, v + 0.5* mDeltaT *n2, a + 0.5* mDeltaT *o2);
+		double o3 = mAccelerationDerivative.getFunctionValue(s + 0.5* mDeltaT *m2, v + 0.5* mDeltaT *n2, a + 0.5* mDeltaT *o2);
+
+		double m4 = mSagDerivative.getFunctionValue(s + mDeltaT *m3, v + mDeltaT *n3, a + mDeltaT *o3);
+		double n4 = mSpeedDerivative.getFunctionValue(s + mDeltaT *m3, v + mDeltaT *n3, a + mDeltaT *o3);
+		double o4 = mAccelerationDerivative.getFunctionValue(s + mDeltaT *m3, v + mDeltaT *n3, a + mDeltaT *o3);
+
+		deltaS = (1./6.) * mDeltaT * (m1 + 2*m2 + 2*m3 + m4);
+		deltaV = (1./6.) * mDeltaT * (n1 + 2*n2 + 2*n3 + n4);
+		deltaA = (1./6.) * mDeltaT * (o1 + 2*o2 + 2*o3 + o4);
+
+		s += deltaS;
+		v += deltaV;
+		a += deltaA;
+		t += mDeltaT;
+
+		l1 = Math.sqrt(s * s + l*l/4);
+		fv = m * (gravityAcceleration - a);
+		gFactor = (gravityAcceleration - a) / gravityAcceleration;
+		fa = l1 * fv / (2*s);
+
+	}
+
+	public void freeFallIterationStep()
+	{
+		deltaS = 0.5*gravityAcceleration*mDeltaT*mDeltaT + v*mDeltaT;
+		deltaV = gravityAcceleration * mDeltaT;
+		deltaA = 0;
+
+		s += deltaS;
+		v += deltaV;
+		a = gravityAcceleration;
+		t += mDeltaT;
+
+		fv = 0;
+		gFactor = 0;
+		fa = getPretension();
+	}
+
+	private void initializeSimulation(double s0, double v0, double a0)
+	{
+		s = s0;
+		v = v0;
+		a = a0;
+		t = 0;
+
+		l = getLength();
+		m = getWeight();
+		l1 = Math.sqrt(s * s + l * l / 4);
+
+		fv = m * (gravityAcceleration - a);
+		gFactor = (gravityAcceleration - a) / gravityAcceleration;
+
+		if(s > 0)
+			fa = l1 * fv / (2*s);
+		else
+			fa = getPretension();
+	}
+
+	public class SimulationValues
+	{
+		public double sag, speed, acceleration, time, verticalForce, anchorForce, gFactor;
+	}
+
+	public SimulationValues calculateMaximumSimulationValues(double s0)
+	{
+		double v0, a0 = 0;
+		double initialSag = getInitialSag();
+
+		if (s0 < initialSag)
+		{
+			v0 = Math.sqrt(2*gravityAcceleration*(initialSag - s0));
+			s0 = 0;
+		}
+		else
+			v0 = 0;
+
+		initializeSimulation(s0, v0, a0);
+
+		SimulationValues maximumValues = new SimulationValues();
+		final double maxSimulationTime = 100;
+		boolean maxSagSet = false;
+		boolean maxSpeedSet = false;
+		boolean maxAccelerationSet = false;
+
+		while(t < maxSimulationTime)
+		{
+			rungeKuttaIterationStep();
+
+
+			if(deltaS < 0 && !maxSagSet)
+			{
+				maximumValues.sag = s;
+				maxSagSet = true;
+			}
+			if(deltaV < 0 && !maxSpeedSet)
+			{
+				maximumValues.speed = v;
+				maxSpeedSet = true;
+			}
+			if(deltaA > 0 && !maxAccelerationSet && maxSpeedSet)
+			{
+				maximumValues.acceleration = a;
+				maximumValues.verticalForce = fv;
+				maximumValues.gFactor = gFactor;
+				maximumValues.anchorForce = fa;
+				maxAccelerationSet = true;
+			}
+
+			if(maxSagSet && maxSpeedSet && maxAccelerationSet)
+				break;
+		}
+
+		return maximumValues;
+	}
+
+	public void writeSimulationToFile(double s0, double simulationTime, String filename)
+	{
+		double initialSag = getInitialSag();
+		double v0 = 0;
+		double a0 = 0;
+		initializeSimulation(s0, v0, a0);
 
 		Writer csvFile = null;
-		String filename = "simulation.csv";
 
 		try {
 			csvFile = new FileWriter(filename);
 
-			boolean alreadyprinted = false;
-
-			for (int i = 0; i < simulationTime/deltaT; i++)
+			while (t < simulationTime)
 			{
-				double m1 = mSagDerivative.getFunctionValue(s, v, a);
-				double n1 = mSpeedDerivative.getFunctionValue(s, v, a);
-				double o1 = mAccelerationDerivative.getFunctionValue(s, v, a);
 
-				double m2 = mSagDerivative.getFunctionValue(s + 0.5*deltaT*m1, v + 0.5*deltaT*n1, a + 0.5*deltaT*o1);
-				double n2 = mSpeedDerivative.getFunctionValue(s + 0.5*deltaT*m1, v + 0.5*deltaT*n1, a + 0.5*deltaT*o1);
-				double o2 = mAccelerationDerivative.getFunctionValue(s + 0.5*deltaT*m1, v + 0.5*deltaT*n1, a + 0.5*deltaT*o1);
-
-				double m3 = mSagDerivative.getFunctionValue(s + 0.5*deltaT*m2, v + 0.5*deltaT*n2, a + 0.5*deltaT*o2);
-				double n3 = mSpeedDerivative.getFunctionValue(s + 0.5*deltaT*m2, v + 0.5*deltaT*n2, a + 0.5*deltaT*o2);
-				double o3 = mAccelerationDerivative.getFunctionValue(s + 0.5*deltaT*m2, v + 0.5*deltaT*n2, a + 0.5*deltaT*o2);
-	
-				double m4 = mSagDerivative.getFunctionValue(s + deltaT*m3, v + deltaT*n3, a + deltaT*o3);
-				double n4 = mSpeedDerivative.getFunctionValue(s + deltaT*m3, v + deltaT*n3, a + deltaT*o3);
-				double o4 = mAccelerationDerivative.getFunctionValue(s + deltaT*m3, v + deltaT*n3, a + deltaT*o3);
-
-				double deltaS = (1./6.) * deltaT * (m1 + 2*m2 + 2*m3 + m4);
-				double deltaV = (1./6.) * deltaT * (n1 + 2*n2 + 2*n3 + n4);
-				double deltaA = (1./6.) * deltaT * (o1 + 2*o2 + 2*o3 + o4);
-				
-				
-				
-				s += deltaS;
-				v += deltaV;
-				a += deltaA;
-				t += deltaT;
-				
-				l1 = Math.sqrt(s * s + l*l/4);
-				fv = m * (gravityAcceleration - a);
-				gfactor = (gravityAcceleration - a) / gravityAcceleration;
-				fa = l1 * fv / (2*s);
-
-				csvFile.append(t + "," + s + "," + v + "," + a + "," + fv + "," + gfactor + "," + fa + "\n");
-
-				
-				if (deltaS <= 0 && !alreadyprinted)
+				if(s > initialSag)
 				{
-					out.printf("g-factor:\t\t%.5f\n", gfactor);
-					out.printf("max. slacker force:\t%.5f kN\n", fv/1e3);
-					out.printf("max. line force:\t%.5f kN\n", fa/1e3);
-					out.printf("max. sag:\t\t%.5f m\n", s);
-					alreadyprinted = true;
+					rungeKuttaIterationStep();
 				}
-				
+				else
+				{
+					freeFallIterationStep();
+				}
+
+				csvFile.append(t + "," + s + "," + v + "," + a + "," + fv + "," + gFactor + "," + fa + "\n");
 			}
 
 		} catch (IOException e) {

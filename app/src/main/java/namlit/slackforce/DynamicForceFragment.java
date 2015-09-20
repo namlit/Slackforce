@@ -311,11 +311,11 @@ public class DynamicForceFragment extends Fragment {
     private void calculateAndDisplayDynamicForces()
     {
         try {
-            double maxForces[] = mBounceSimulations.calculateMaximumForces(mBounceSimulations.calculateHeightOfFallFromStandingReference(mHeightOfFallValue));
-            mGFactor.setText(String.format(Locale.ENGLISH, "%.2f", maxForces[0]));
-            mSlackerForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[1] / 1e3));
-            mMaxLineForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maxForces[2] / 1e3));
-            mMaxSag.setText(String.format(Locale.ENGLISH, "%.2f m", maxForces[3]));
+            SlacklineBounceSimulations.SimulationValues maximumValues = mBounceSimulations.calculateMaximumSimulationValues(mBounceSimulations.calculateHeightOfFallFromStandingReference(mHeightOfFallValue));
+            mGFactor.setText(String.format(Locale.ENGLISH, "%.2f", maximumValues.gFactor));
+            mSlackerForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maximumValues.verticalForce / 1e3));
+            mMaxLineForce.setText(String.format(Locale.ENGLISH, "%.2f kN", maximumValues.anchorForce / 1e3));
+            mMaxSag.setText(String.format(Locale.ENGLISH, "%.2f m", maximumValues.sag));
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             Toast.makeText(getActivity(), getString(R.string.dynamic_force__zero_stretch_toast), Toast.LENGTH_LONG).show();
