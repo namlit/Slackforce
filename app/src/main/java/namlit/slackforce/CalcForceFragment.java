@@ -42,7 +42,7 @@ public class CalcForceFragment extends Fragment {
 
     public enum Parameter
     {
-        STRETCH, LENGTH, SAG, WEIGHT, FORCE, PRETENSION, SAGWITHOUTSLACKER
+        STRETCH, LENGTH, SAG, WEIGHT, FORCE, PRETENSION, SAGWITHOUTSLACKER, NO_PARAMETER
     }
 
 
@@ -60,7 +60,7 @@ public class CalcForceFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private SlacklineCalculations mSlackineCalculations;
     private Parameter mParameterToCalculate = Parameter.FORCE;
-    private Parameter mParameterChanged = Parameter.LENGTH;
+    private Parameter mParameterChanged = Parameter.NO_PARAMETER;
 
     private Button mWebbing;
     private EditText mStretch;
@@ -474,6 +474,14 @@ public class CalcForceFragment extends Fragment {
     private void update()
     {
         readInputField();
+        if(mParameterToCalculate == mParameterChanged ||
+                (mParameterToCalculate == Parameter.FORCE && (mParameterChanged == Parameter.PRETENSION || mParameterChanged == Parameter.SAGWITHOUTSLACKER)))
+        {
+            mParameterChanged = Parameter.NO_PARAMETER;
+            selectParameterToCalculate();
+            return;
+        }
+        mParameterChanged = Parameter.NO_PARAMETER;
         updateCalculations();
         updateAllTextFields();
     }
