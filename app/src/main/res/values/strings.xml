@@ -5,12 +5,37 @@
     <string name="title_section2">static\nCalculations</string>
     <string name="title_section3">dynamic\nCalculations</string>
 
-    <string name="main_activity__option_info">Info</string>
     <string name="main_activity__option_about">About</string>
+    <string name="main_activity__option_help">Help</string>
 
     <string name="option_about__source_code_at">Source Code and Support at:</string>
     <string name="option_about__github_address">https://github.com/namlit/Slackforce</string>
     <string name="option_about__post_on_github">Please post bug reports and feature requests at the github page.</string>
+
+    <string name="documentation">Documentation</string>
+    <string name="documentation_text">For a documentation on the theoretical background have a look at the linked
+        &lt;a href="https://github.com/namlit/SlackforceDocumentation/raw/master/slackforceDocumentationSmartphone.pdf">PDF&lt;/a>
+
+        &lt;h1>Measure Force&lt;/h1>
+        &lt;p>The idea is to calculate the tension of the line from the rhythmical sound you get when slapping the line with your finger.
+        To measure the tension you have to do the following steps:&lt;/p>
+        &lt;p>1. Enter the correct webbing and Length of the line &lt;/p>
+        &lt;p>2. Press the start measurement button&lt;/p>
+        &lt;p>3. Hold the microphon of you phone close to the line&lt;/p>
+        &lt;p>4. Slap the end of the line with your finger to get the rhythmical sound&lt;/p>
+        &lt;p>5. Wait for the measurement to finish&lt;/p>
+        &lt;p> If the automatic measurement does not work you can switch to manual mode and type the rhythm on a button. &lt;/p>
+
+        &lt;h1> Static Calculations &lt;/h1>
+        &lt;p> In the static calculations section the relation between length, sag, force and weight can be calculated
+        at static conditions with a slackliner standing in the middle of the line&lt;/p>
+
+        &lt;h1> Dynamic Calculations &lt;/h1>
+        &lt;p> To calculate the forces involved in bouncing and jumping in the middle of a slackline a dynamic simulation
+        of the slackline\'s movement is done. This section is highly experimentive yet and the results have not been verified. &lt;/p>
+
+        &lt;p> To get more information on the particular parameters you can click on the parameter names in each section.&lt;/p>
+    </string>
 
     <string name="title_activity_select_webbing_manufacturer_action">Select Manufacturer</string>
     <string name="title_activity_select_webbing">Select Webbing</string>
@@ -100,6 +125,8 @@
 
     <string name="measure_force_manual__description_text">Slap the Line, listen to the sound and type the rhythm on the button below</string>
 
+    <string name="show_measurement_result__result_text">The Pretension is %.2f kN</string>
+    <string name="show_measurement_result__time_Of_Oscillation">The measured time of oscillation is %.3f s</string>
 
     <string name="calculate_force__general_info_title">Calculate static Forces</string>
     <string name="calculate_force__general_info_text">The calculation of the static forces is based on the formula F = sqrt(sag^2 + length^2/4) * m*g / (2 * sag). m is the weight of the slackliner and g the gravity acceleration. If the stretch behavior of the line is known, it is also possible to calculate the pretension of the line from the force. For Rodeo lines the initial sag without a slackliner on the line gets calculated. You can change any parameter and get ask automatically which parameter you want to calculate. For further information on the parameters you can click on the parameter names.</string>

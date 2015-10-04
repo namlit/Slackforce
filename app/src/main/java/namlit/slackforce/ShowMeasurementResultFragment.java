@@ -73,9 +73,9 @@ public class ShowMeasurementResultFragment extends Fragment {
         mCopyValuesButton = (Button) view.findViewById(R.id.copyValuesButton);
         mMeasureAgainButton = (Button) view.findViewById(R.id.measureAgainButton);
         TextView forceText = (TextView) view.findViewById(R.id.resultText);
-        forceText.setText(String.format("The Pretension is %.2f kN", mPretension / 1e3));
+        forceText.setText(String.format(getString(R.string.show_measurement_result__result_text), mPretension / 1e3));
         TextView oscillationTimeText = (TextView) view.findViewById(R.id.timeOfOscillationText);
-        oscillationTimeText.setText(String.format("The measured time of oscillation is %.3f s", mTimeOfOscillation));
+        oscillationTimeText.setText(String.format(getString(R.string.show_measurement_result__time_Of_Oscillation), mTimeOfOscillation));
 
         mCopyValuesButton.setOnClickListener(new View.OnClickListener() {
             @Override

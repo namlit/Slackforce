@@ -3,6 +3,10 @@ package namlit.slackforce;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.widget.TextView;
 
 /**
@@ -15,9 +19,13 @@ public class ParameterInfoDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         TextView view = new TextView(activity);
-        view.setText(infoText);
+        view.setText(Html.fromHtml(infoText));
+        view.setTextColor(Color.BLACK);
+        view.setPadding(10, 10, 10, 10);
+        view.setMovementMethod(LinkMovementMethod.getInstance());
+        view.setLinksClickable(true);
 
-        builder.setTitle(title);
+        //builder.setTitle(title);
         builder.setView(view);
         builder.setNeutralButton(activity.getString(R.string.back), new DialogInterface.OnClickListener() {
             @Override
