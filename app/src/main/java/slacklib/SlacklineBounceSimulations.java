@@ -11,7 +11,7 @@ public class SlacklineBounceSimulations {
 	private double mVerticalPositionOfSlackliner; // corresponds to -sag of slackline for positive values
 	private double mDeltaT = 0.001;
 
-	private double s, v, a, t, l, l1, m, fv, gFactor, fa, deltaS, deltaV, deltaA;
+	private double s, v, a, t, l, l1, m, fv, f0, gFactor, fa, deltaS, deltaV, deltaA;
 
     private final SagDerivative mSagDerivative = new SagDerivative();
     private final SpeedDerivative mSpeedDerivative = new SpeedDerivative();
@@ -273,8 +273,7 @@ public class SlacklineBounceSimulations {
 			double c2 = 1 / (alpha2 * (l/2) );
 			double d = mWebbing.getLinearSolidModelDampingFactor() / (l/2);
 			double g = gravityAcceleration;
-			double F0 = getPretension();
-			double deltaL0 = stretchCoefficient * F0 * l;
+			double deltaL0 = stretchCoefficient * f0 * l;
 			double l0 = Math.sqrt(initialSag * initialSag + l*l/4);
 			double l1 = Math.sqrt(s * s + l*l/4);
 
@@ -288,6 +287,25 @@ public class SlacklineBounceSimulations {
 					2*s*v*(g-a)*(1/(2*l1)-l1/(s*s)) / l1 -
 					2*s*c1*c2*((deltaL0/2)-l0+l1) / (d*m*l1) -
 					2*s*s*v*c1 / (m*l1*l1) );
+		}
+	}
+
+	private void simulationIterationStep()
+	{
+		double initialSag = getInitialSag();
+
+		if(s <= initialSag)
+		{
+			freeFallIterationStep();
+		}
+		else
+		{
+			if( 2*s/l < 0.05)
+			{
+				smallPositiveSagIterationStep();
+			}
+			else
+				rungeKuttaIterationStep();
 		}
 	}
 
@@ -331,7 +349,7 @@ public class SlacklineBounceSimulations {
 
 	}
 
-	public void freeFallIterationStep()
+	private void freeFallIterationStep()
 	{
 		deltaS = 0.5*gravityAcceleration*mDeltaT*mDeltaT + v*mDeltaT;
 		deltaV = gravityAcceleration * mDeltaT;
@@ -347,6 +365,32 @@ public class SlacklineBounceSimulations {
 		fa = getPretension();
 	}
 
+	private void smallPositiveSagIterationStep()
+	{
+		double stretchCoefficient = getStretchCoefficient();
+		double alpha1 = mWebbing.getLinearSolidModelStretchCoefficient1();
+		double alpha2 = mWebbing.getLinearSolidModelStretchCoefficient2();
+		double c1 = 1 / (alpha1 * (l/2) );
+		double c2 = 1 / (alpha2 * (l/2) );
+		double d = mWebbing.getLinearSolidModelDampingFactor() / (l/2);
+		l1 = Math.sqrt(s * s + l * l / 4);
+
+
+		fv = 2*s*fa / l1;
+		deltaA = gravityAcceleration - fv/m - a;
+		deltaV = a * mDeltaT;
+		deltaS = 0.5 * a * mDeltaT * mDeltaT + v * mDeltaT;
+
+		a = gravityAcceleration - fv/m;
+		v += deltaV;
+		s += deltaS;
+		t += mDeltaT;
+
+		double xPunkt = (Math.sqrt(s * s + l * l / 4) - l1) / mDeltaT;
+		fa = f0 + c1*d*xPunkt / (c1+c2) + (fa - f0) * Math.exp(-(c1+c2) * mDeltaT / d);
+		gFactor = (gravityAcceleration-a)/gravityAcceleration;
+	}
+
 	private void initializeSimulation(double s0, double v0, double a0)
 	{
 		s = s0;
@@ -356,6 +400,7 @@ public class SlacklineBounceSimulations {
 
 		l = getLength();
 		m = getWeight();
+		f0 = getPretension();
 		l1 = Math.sqrt(s * s + l * l / 4);
 
 		fv = m * (gravityAcceleration - a);
@@ -426,7 +471,6 @@ public class SlacklineBounceSimulations {
 
 	public void writeSimulationToFile(double s0, double simulationTime, String filename)
 	{
-		double initialSag = getInitialSag();
 		double v0 = 0;
 		double a0 = 0;
 		initializeSimulation(s0, v0, a0);
@@ -439,14 +483,7 @@ public class SlacklineBounceSimulations {
 			while (t < simulationTime)
 			{
 
-				if(s > initialSag)
-				{
-					rungeKuttaIterationStep();
-				}
-				else
-				{
-					freeFallIterationStep();
-				}
+				simulationIterationStep();
 
 				csvFile.append(t + "," + s + "," + v + "," + a + "," + fv + "," + gFactor + "," + fa + "\n");
 			}
