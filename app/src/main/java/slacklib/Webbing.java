@@ -42,9 +42,11 @@ public class Webbing
 		Manufacturer elephant = new Manufacturer("Elephant");
 		Manufacturer landcruising = new Manufacturer("Landcruising");
 		Manufacturer slackliner = new Manufacturer("Slackliner.de");
-		Manufacturer slacklineTools = new Manufacturer("Sackline-Tools");
+		Manufacturer slacklineTools = new Manufacturer("Slackline-Tools");
+		Manufacturer slackmountain = new Manufacturer("Slack-Mountain");
 		Manufacturer slackpro = new Manufacturer("SlackPro");
 		Manufacturer slacktivity = new Manufacturer("Slacktivity");
+		Manufacturer slackfr = new Manufacturer("Slack.fr");
 
 
 		double aeroForces[] = {1e3, 2e3, 3e3, 4e3, 5e3, 6e3, 7e3, 8e3, 9e3, 10e3, 11e3, 12e3, 13e3, 14e3, 15e3, 16e3, 17e3, 18e3, 19e3, 20e3};
@@ -98,12 +100,29 @@ public class Webbing
 		slacklineTools.addWebbing("SOFT", 48e-3, new StretchBehavior(new StretchPoint(6e3, 0.13), new StretchPoint(21e3, 0.32)), 21, 30);
 		slacklineTools.addWebbing("STRONG II", 67e-3, new StretchBehavior(new StretchPoint(6e3, 0.045), new StretchPoint(36e3, 0.15)), 36, 25);
 
+		slackmountain.addWebbing("Cobalt", 60e-3, 3.8e-2, 30, 25);
+		slackmountain.addWebbing("Diablo", 96e-3, 3.5e-2, 30, 25);
+		slackmountain.addWebbing("Diablo 2", 96e-3, 3.5e-2, 30, 25);
+		slackmountain.addWebbing("Flax", 38e-3, 13e-2, 20, 25);
+		slackmountain.addWebbing("Fox", 52e-3, 10e-2, 21, 25);
+		slackmountain.addWebbing("Goku", 32e-3, 3.8e-2, 35, 25);
+		slackmountain.addWebbing("Snake Tub", 52e-3, 10e-2, 21, 25);
+		slackmountain.addWebbing("Windu", 65e-3, 6.5e-2, 25, 25);
+
 		slackpro.addWebbing("NEON-Light", 0.057, new StretchBehavior(new StretchPoint(10e3, 0.0375)), 33, 25);
 		slackpro.addWebbing("Green-Flash", 0.072, new StretchBehavior(new StretchPoint(10e3, 0.035), new StretchPoint(15e3, 0.05), new StretchPoint(20e3, 0.065)), 42, 25);
 
-		slacktivity.addWebbing("BLACK-WHITE", 89e-3, new StretchBehavior(new StretchPoint(10e3, 6)), 43, 25);
+		slacktivity.addWebbing("BLACK-WHITE", 89e-3, new StretchBehavior(new StretchPoint(10e3, 6e-2)), 43, 25);
 		slacktivity.addWebbing("Marathon", 61.5e-3, new StretchBehavior(new StretchPoint(10e3, 0.04)), 37, 25);
 		slacktivity.addWebbing("redTUBE", 76e-3, new StretchBehavior(new StretchPoint(10e3, 0.18)), 32, 25);
+
+		slackfr.addWebbing("Club S", 75e-3, 7e-2, 30, 25);
+		slackfr.addWebbing("Dark Blue", 62e-3, new StretchBehavior(new StretchPoint(15e3, 5.5e-2)), 28, 25);
+		slackfr.addWebbing("Kill Bill", 146e-3, 2.4e-2, 54, 25);
+		slackfr.addWebbing("Maverick", 62e-3, new StretchBehavior(new StretchPoint(10e3, 4.5e-2), new StretchPoint(15e3, 6.7e-2)), 31, 25);
+		slackfr.addWebbing("MILF", 73e-3, new StretchBehavior(new StretchPoint(10e3, 7e-2), new StretchPoint(15e3, 8.5e-2)), 37, 25);
+		slackfr.addWebbing("Moonwalk", 33.4e-3, new StretchBehavior(new StretchPoint(10e3, 4e-2), new StretchPoint(15e3, 4.4e-2), new StretchPoint(20e3, 5e-2)), 35, 25);
+		slackfr.addWebbing("Neon-Light", 62e-3, 4.5e-2, 35, 25);
 
 		updateListOfWebbings();
 	}
@@ -126,6 +145,11 @@ public class Webbing
 	public Webbing(String name, double lineWeight , StretchBehavior stretchBehavior)
 	{
 		this("Custom", null, lineWeight, stretchBehavior, 0, 0);
+	}
+
+	public Webbing(String name, Manufacturer manufacturer, double weightPerMeter, double stretchAt10kN, double breakingStrength, double width)
+	{
+		this(name, manufacturer, weightPerMeter, new StretchBehavior(new StretchPoint(10000, stretchAt10kN)) , breakingStrength, width);
 	}
 
 	public Webbing(String name, Manufacturer manufacturer, double weightPerMeter, StretchBehavior stretchBehavior, double breakingStrength, double width)

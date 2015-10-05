@@ -63,6 +63,11 @@ public class Manufacturer
 	{
 		mWebbings.add(new Webbing(name, this, weightPerMeter, stretchCoefficient, breakingStrength, width));
 	}
+
+	public void addWebbing(String name, double weightPerMeter, double stretchAt10kN, double breakingStrength, double width)
+	{
+		mWebbings.add(new Webbing(name, this, weightPerMeter, stretchAt10kN, breakingStrength, width));
+	}
 	
 	public void addWebbing(Webbing webbing)
 	{
